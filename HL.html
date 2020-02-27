@@ -1,0 +1,63 @@
+
+ <head>
+ </head>
+ <body>
+<h1>レインフロー法による疲労被害評価ソフト(Windows版)</h1>
+
+<p><font color="red">お詫び:本ページに掲載されていましたFlawEval.zipにはバグが含まれていました．残余の半波の第一波についてレンジについて絶対値をとらなければならないところ，そのまま出力していたために，値が負となる場合がありました．改訂版を下記に掲示いたします(2020.2.26)</font></p>
+<a href="https://www.dropbox.com/s/crcziytf3lhj5ye/HL-cpp.zip?dl=0">download</a>
+<br>
+ダウンロード後に解凍するとHL-cppフォルダ内に5つのファイルが含まれている．その内容は下記の通り．
+<table border="1">
+    <tr>
+    <th>ファイル名</th><th>内容</th>
+    </tr>
+    <tr>
+    <td>peak.exe</td><td>時系列波形からピーク値を算出する実行ファイル</td>
+    </tr>
+    <tr><td>hl.exe</td><td>ピーク値データからヒステリシスループ計数結果を出力する実行ファイル</td>
+    </tr>
+    <tr><td>exam.csv</td><td>入力波形例題データ</td></tr>
+    <tr><td>peak.csv</td><td>exam.csvに対するpeak.exe実行結果</td></tr>
+    <tr><td>hloop.csv</td><td>peak.csvに対するhl.exe実行結果</td></tr>
+    </table>
+
+<h2>利用法</h2>
+<ol>
+    <li>コマンドプロンプトウィンドを出した後，カレントフォルダを上記のダウンロードファイルの存在する位置に設定する</li>
+    <li>入力波形データファイルを後述するフォーマットで準備する．ここではexam.csvとする．</li>
+    <li>コマンドプロンプトにて以下により，peak.exeを実行させpeak値処理する．出力結果はpeak.csvに格納される．ただし，%はコマンドプロンプトであることを示す．<br>      
+    <pre>%peak < exam.csv > peak.csv</pre></li>
+    <li>出力されたpeak.csvを下記処理によりhl.exeに入力し，ヒステリシスループ計数を実行する．出力結果はhloop.csvに出力される．<br>
+    <pre>%hl < peak.csv > hloop.csv</peak.csv></pre></li>
+    <li>上記の処理を以下のパイプ処理により，一度に実行することもできる．<br>
+    <pre>%peak < exam.csv | hl > hloop.csv</exam.csv></pre></li>
+</ol>
+<u>入力波形データフォーマット</u>
+<pre>
+    num,dt
+    data1
+    data2
+    .
+    .
+</pre>
+<p>ここで，numはデータ個数，dtは時間刻み．ただし，dtは波形計数には使用しない．data1,data2,...は波形値でnum行存在する．</p>
+<u>ピーク値データフォーマット</u>
+<pre>
+    num
+    data1
+    data2
+    .
+    .
+</pre>
+<p>ここで，numはピーク個数，data1,data2,...はピーク値でnum行存在する．</p>
+<u>計数結果フォーマット</u>
+<pre>
+    num
+    range1,mean1
+    range2,mean2
+    .
+    .
+</pre>
+<p>ここで，numは計数された半波の数．range1,mean1は最初の半波のレンジとその平均値．以後num行継続する．</p>
+ </body>
