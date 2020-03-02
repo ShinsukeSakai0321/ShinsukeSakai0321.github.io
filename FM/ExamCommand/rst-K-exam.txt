@@ -1,0 +1,17 @@
+Version 1.0 (Released 2006.12.1)
+[2006年12月02日18時49分51秒]
+K値の計算条件[K-1-a-1]
+平板のき裂・半楕円表面き裂・Raju-Newmanの解
+Ref:(1)Newman,J.C.Jr. and Raju,I.S.,'Stress Intensity Factor Equations for Cracks
+ in Three-Dimensional Finite Bodies',NASA Technical Memorandum 85793,1984
+
+t=10[mm]
+b=25[mm]
+a=6[mm]
+c=6[mm]
+P=100000[N]
+M=0[N_m]
+--- K値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+a=  0.006,c=  0.006,Ka=1.96424e+007,Kb=2.40815e+007[Pa_m^1/2]

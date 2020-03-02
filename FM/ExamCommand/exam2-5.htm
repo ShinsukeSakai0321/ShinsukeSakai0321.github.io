@@ -1,0 +1,161 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>入力</title>
+</head>
+
+<body>
+
+  <table cellSpacing="8" cellPadding="0" width="786" border="0">
+      <tr>
+        <td vAlign="top" width="259" bgColor="#c0c0c0">入力</td>
+        <td width="15"></td>
+        <td vAlign="top" width="474" bgColor="#c0c0c0">出力</td>
+      </tr>
+      <tr>
+        <td vAlign="top" width="259">*P.380の例題<br>
+          +K-1-a-1<br>
+          t:40[mm]<br>
+          b:100[mm]<br>
+          a:20[mm]<br>
+          c:15[mm]<br>
+          P:2000000[N]<br>
+          -K-1-a-1<br>
+          +L-1-a<br>
+          -L-1-a<br>
+          K2L<br>
+          +M-Exam1<br>
+          *P.379の例題<br>
+          Su:490[MPa]<br>
+          Sy:270[MPa]<br>
+          Sf:380[MPa]<br>
+          E:192[GPa]<br>
+          Nu:0.3<br>
+          J1c:0.1[MN/m]<br>
+          -M-Exam1<br>
+          R6<br>
+          +MF-5-1-1<br>
+          *疲労き裂進展データ<br>
+          R:0<br>
+          Nmax:3e5<br>
+          dN:1<br>
+          Np:10000<br>
+          (MAX)P:8e5[N]<br>
+          (MIN)P:0[N]<br>
+          -MF-5-1-1<br>
+          FATIGUE<br>
+          +CHANGEK<br>
+          P:2000000[N]<br>
+          -CHANGEK<br>
+          K2L<br>
+          R6<br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+        </td>
+        <td width="15"></td>
+        <td vAlign="top" width="474">Version 1.30 (Released 2009.5.12)<br> 
+          [2009年05月13日16時31分03秒]<br>
+          *P.380の例題<br>
+          K値の計算条件[K-1-a-1]<br>
+          平板のき裂・半楕円表面き裂<br>
+          Raju-Newmanの解<br>
+          Ref:Newman,J.C.Jr. and Raju,I.S.,'Stress Intensity Factor Equations for Cracks<br> 
+ in Three-Dimensional Finite Bodies',NASA Technical Memorandum 85793,1984<br> 
+          <br>
+          Range:0&lt;a/t&lt;=0.8,0&lt;a,c&lt;=2,0&lt;c/b&lt;=0.5<br>
+          t=40[mm]<br>
+          b=100[mm]<br>
+          a=20[mm]<br>
+          c=15[mm]<br>
+          P=2000000[N]<br>
+          L値の計算条件[L-1-a]<br>
+          平板のき裂・半楕円表面き裂<br>
+          Ref:Dillstrom,P. and Satrari-Far.I.:Limit Load Solutions for Surface Cracks in Plates and Cylinders, RSE R&amp;D Report, No.2002/01, Det Norske Veritas AB,2002<br> 
+          Range:a/t&lt;=0.8<br>
+          材料定数[M-Exam1]<br>
+          *P.379の例題<br>
+          Su=490[MPa]<br>
+          Sy=270[MPa]<br>
+          Sf=380[MPa]<br>
+          E=192[GPa]<br>
+          Nu=0.3<br>
+          J1c=0.1[MN/m]<br>
+          *** R6法による評価 ***<br> 
+          Kp=3.58054e+007,Ks=0[Pa_m1/2]<br>
+          χ=0,ρ=0<br>
+          Kr=0.246501,Lr=0.986175<br>
+          R6法による評価:margin=1.23476<br>
+          --- 疲労き裂進展の計算 ---<br> 
+          疲労計算条件[MF-5-1-1]<br>
+          データ:容器用および配管用フェライト鋼・JSME維持規格（大気中および内部き裂）<br>
+          *疲労き裂進展データ<br>
+          R=0<br>
+          Nmax=3e5<br>
+          dN=1<br>
+          Np=10000<br>
+          P=8e5[N]<br>
+          P=0[N]<br>
+          *** 疲労き裂進展計算結果 ***<br> 
+          10000:a=0.0201405,c=0.0153465<br>
+          20000:a=0.0202876,c=0.0157024<br>
+          30000:a=0.0204417,c=0.0160684<br>
+          40000:a=0.020603,c=0.016445<br>
+          50000:a=0.0207721,c=0.0168327<br>
+          60000:a=0.0209492,c=0.0172323<br>
+          70000:a=0.0211349,c=0.0176445<br>
+          80000:a=0.0213297,c=0.01807<br>
+          90000:a=0.0215341,c=0.0185098<br>
+          100000:a=0.0217487,c=0.018965<br>
+          110000:a=0.0219742,c=0.0194366<br>
+          120000:a=0.0222113,c=0.019926<br>
+          130000:a=0.0224609,c=0.0204346<br>
+          140000:a=0.0227238,c=0.0209641<br>
+          150000:a=0.0230011,c=0.0215162<br>
+          160000:a=0.0232941,c=0.0220933<br>
+          170000:a=0.0236039,c=0.0226977<br>
+          180000:a=0.0239322,c=0.0233323<br>
+          190000:a=0.0242808,c=0.0240006<br>
+          200000:a=0.0246519,c=0.0247068<br>
+          210000:a=0.0250489,c=0.0254552<br>
+          220000:a=0.0254734,c=0.0262473<br>
+          230000:a=0.0259283,c=0.0270887<br>
+          240000:a=0.0264173,c=0.0279857<br>
+          250000:a=0.0269447,c=0.0289463<br>
+          260000:a=0.0275155,c=0.0299801<br>
+          270000:a=0.0281362,c=0.0310992<br>
+          280000:a=0.0288146,c=0.0323189<br>
+          290000:a=0.029561,c=0.033659<br>
+          300000:a=0.0303886,c=0.0351458<br>
+          <br>
+          ***K値計算条件の変更***<br>
+          P=2000000[N]<br>
+          *** R6法による評価 ***<br> 
+          Kp=6.54192e+007,Ks=0[Pa_m1/2]<br>
+          χ=0,ρ=0<br>
+          Kr=0.450376,Lr=1.1183<br>
+          R6法による評価:margin=0.978451<br>
+          <br>
+        </td>
+      </tr>
+  </table>
+
+<p>[解説]</p>
+<p>き裂進展前後でのＲ６法評価．Ｒ６コマンドに遭遇する度に，図上にプロットされる．いずれも，破壊限界の内側にあることが確認できる．テキストでは，進展後に限界値を越える例題になっているが，計算途中で解析の適用範囲を超えてしまうことがわかった．そこで，繰り返し回数を3.5e5ではなく，3.0e5に変更してある．</p>
+<p><img border="0" src="exam2-5.JPG" width="489" height="371"></p>
+<p>　</p>
+
+</body>
+
+</html>

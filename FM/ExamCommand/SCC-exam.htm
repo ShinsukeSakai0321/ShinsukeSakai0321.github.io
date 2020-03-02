@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="ja">
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>新しいページ 1</title>
+</head>
+
+<body>
+
+<table cellSpacing="8" cellPadding="0" width="786" border="0">
+  <tr>
+    <td vAlign="top" width="259" bgColor="#c0c0c0">入力</td>
+    <td width="15"></td>
+    <td vAlign="top" width="474" bgColor="#c0c0c0">出力</td>
+  </tr>
+  <tr>
+    <td vAlign="top" width="259">* Example of SCC<br> 
+      +K-1-a-1<br>
+      t:10[mm]<br>
+      b:25[mm]<br>
+      a:6[mm]<br>
+      c:6[mm]<br>
+      P:100000[N]<br>
+      M:0[N_m]<br>
+      -K-1-a-1<br>
+      KCALC<br>
+      +MS-6-1-1-c-2<br>
+      Tmax:11000[hr]<br>
+      dT:1000[hr]<br>
+      Tp:1000[hr]<br>
+      -MS-6-1-1-c-2<br>
+      SCC</td>
+    <td width="15"></td>
+    <td vAlign="top" width="474">Version 1.0 (Released 2006.12.1)<br> 
+      [2006年12月02日19時38分56秒]<br>
+      K値の計算条件[K-1-a-1]<br>
+      平板のき裂・半楕円表面き裂・Raju-Newmanの解<br>
+      Ref:(1)Newman,J.C.Jr. and Raju,I.S.,'Stress Intensity Factor Equations for Cracks<br> 
+ in Three-Dimensional Finite Bodies',NASA Technical Memorandum 85793,1984<br> 
+      <br>
+      t=10[mm]<br>
+      b=25[mm]<br>
+      a=6[mm]<br>
+      c=6[mm]<br>
+      P=100000[N]<br>
+      M=0[N_m]<br>
+      --- K値の計算 ---<br> 
+      適用範囲のチェック：<br>
+      ---range satisfied---<br> 
+      a=  0.006,c=  0.006,Ka=1.96424e+007,Kb=2.40815e+007[Pa_m^1/2]<br> 
+      --- SCCき裂進展の計算 ---<br> 
+      SCC計算条件[MS-6-1-1-c-2]<br>
+      データ:JSME維持規格（配管および炉内構造物）<br>
+      BWR水素注入環境中<br>
+      低炭素系ステンレス鋼<br>
+      Tmax=11000[hr]<br>
+      dT=1000[hr]<br>
+      Tp=1000[hr]<br>
+      *** SCCき裂進展計算結果 ***<br> 
+      3.6e+006[sec]:a=0.00600747,c=0.0060116<br>
+      7.2e+006[sec]:a=0.00601496,c=0.00602324<br>
+      1.08e+007[sec]:a=0.00602248,c=0.0060349<br>
+      1.44e+007[sec]:a=0.00603001,c=0.0060466<br>
+      1.8e+007[sec]:a=0.00603757,c=0.00605833<br>
+      2.16e+007[sec]:a=0.00604515,c=0.00607009<br>
+      2.52e+007[sec]:a=0.00605275,c=0.00608189<br>
+      2.88e+007[sec]:a=0.00606037,c=0.00609371<br>
+      3.24e+007[sec]:a=0.00606802,c=0.00610557<br>
+      3.6e+007[sec]:a=0.00607569,c=0.00611746<br>
+      3.96e+007[sec]:a=0.00608338,c=0.00612939</td>
+  </tr>
+</table>
+
+<p>[解説]<br>
+&nbsp;まずK値の計算条件を設定した後に、材料データの中の「SCCき裂進展データ」の中から当該材料データを選択する。あるいは+MS***と-MS***の間に挟まれる部分にSCCき裂進展データを直接書いてもよい。SCCき裂進展用の入力データとして、必要となる計算条件も書く。荷重の書き方は、K値の中で記載した荷重表現形式と完全に一致していなければならない。つまり、K値の計算が、級数形式で表現するものであるなら、荷重形式も級数形式で表現しなければならない。</p>
+<p>　</p>
+
+</body>
+
+</html>

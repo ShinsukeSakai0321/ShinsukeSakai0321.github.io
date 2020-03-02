@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="ja">
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>新しいページ 1</title>
+</head>
+
+<body>
+
+<p><font color="#FF0000">[質問]</font></p>
+<p>Ver 1.20で下記のコマンドを実行したところ、計算結果がおかしい。</p>
+<p>+K-2-k-2<br>
+R:60[mm]<br>
+t:10[mm]<br>
+c:62.8[mm]<br>
+P:0[N]<br>
+M:1.96e4[N_m]<br>
+-K-2-k-2<br>
++L-2-k<br>
+-L-2-k<br>
+K2L<br>
++M-Exam1<br>
+*P.379の例題<br>
+Su:490[MPa]<br>
+Sy:313.6[MPa]<br>
+Sf:313.6[MPa]<br>
+E:192[GPa]<br>
+Nu:0.3<br>
+J1c:0.784[MN/m]<br>
+-M-Exam1<br>
+R6</p>
+<p><font color="#FF0000">[回答]</font></p>
+<p>まず、Ver1.20には、次の2箇所の不具合がみつかりました<br>
+1.L-2-kの計算が一部間違っている<br>
+2.K2Lコマンドの一部に誤りがあった</p>
+<p>これらの、バグは、Ver 1.21で修正しました。ところで、Ver1.21を用いても上記のコマンド配列では正しく計算が<br>
+行われません。問題は、K2Lコマンドの使い方にあります。ハンドブックによるとK-2-k-2では構造形状をRとtで<br>
+指定しているのに対して、L-2-kでは、Ro,Riで指示しています。K2Lコマンドでは、Kの計算条件のコピーをその<br>
+ままL-2-kに渡すのみなので、L-2-kの計算時に、Ro,Riの情報が与えられていないことになります。このことを<br>
+避けるためには、下記のようにKの条件指定にあらゆる表現形式を含めておきます。</p>
+<p>+K-2-k-2<br>
+R:60[mm]<br>
+Ro:65[mm]<br>
+Ri:55[mm]<br>
+t:10[mm]<br>
+c:62.8[mm]<br>
+P:0[N]<br>
+M:1.96e4[N_m]<br>
+-K-2-k-2<br>
++L-2-k<br>
+-L-2-k<br>
+K2L<br>
++M-Exam1<br>
+*P.379の例題<br>
+Su:490[MPa]<br>
+Sy:313.6[MPa]<br>
+Sf:313.6[MPa]<br>
+E:192[GPa]<br>
+Nu:0.3<br>
+J1c:0.784[MN/m]<br>
+-M-Exam1<br>
+R6<br>
+<br>
+このような方式はスマートではありませんが、今のところこれ以上の方法が見つかりません。何かよい方法<br>
+があれば、ご教示いただけると幸いです。<br>
+<br>
+<br>
+<br>
+<br>
+</p>
+<p>　</p>
+
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+Version 1.29 (Released 2009.2.27)
+[2009年02月27日19時59分59秒]
+L値の計算条件[L-2-k]
+円筒のき裂
+周方向貫通き裂(曲げモーメント)
+Ref:Kanninen M.F., et al.,EPRI NP-2347, Vols 1 and 2, EPRI,Palo Alto,CA, April 1982.
+Range:
+Ro=57.5[mm]
+Ri=48.5[mm]
+M=2.86e4[N_m]
+c=28[mm]
+材料定数[M-Exam2]
+Su=313.6[MPa]
+Sy=313.6[MPa]
+E=192.08[GPa]
+Nu=0.3
+Ar=5.5
+n=7
+cj=1.176
+mj=0.44
+--- L値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+Pc=22674.3
+Lr=1.26134
+***L値計算条件の変更***
+c=30[mm]
+--- L値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+Pc=22000
+Lr=1.3
+***L値計算条件の変更***
+c=32[mm]
+--- L値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+Pc=21327.1
+Lr=1.34102
+***L値計算条件の変更***
+c=34[mm]
+--- L値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+Pc=20656.1
+Lr=1.38458
+***L値計算条件の変更***
+c=36[mm]
+--- L値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+Pc=19988
+Lr=1.43086
+J値の計算条件[J-2-k-a-2]
+円筒のき裂
+周方向貫通き裂 Zahoorの解、曲げ
+Ref:Zahoor, A.:Ductile Fracture Handbook Volume 1, EPRI NP-6301-D,1989
+Range:0<Th/pi<=0.5,5<=R/t<=20
+Ro=57.5[mm]
+Ri=48.5[mm]
+t=9[mm]
+c=28[mm]
+M=2.86e4[N_m]
+--- J値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+J=1.67162e+006[N/m]
+***J値計算条件の変更***
+c=30[mm]
+--- J値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+J=2.0914e+006[N/m]
+***J値計算条件の変更***
+c=32[mm]
+--- J値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+J=2.62779e+006[N/m]
+***J値計算条件の変更***
+c=34[mm]
+--- J値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+J=3.32442e+006[N/m]
+***J値計算条件の変更***
+c=36[mm]
+--- J値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+J=4.23924e+006[N/m]

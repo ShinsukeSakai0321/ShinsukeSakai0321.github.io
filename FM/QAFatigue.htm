@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="ja">
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>疲労き裂進展における荷重の設定は</title>
+</head>
+
+<body>
+
+<p>疲労き裂進展における荷重の設定は、最大値、最小値を指定しますが、その設定の仕方は以下の規則に従います。</p>
+<p>(MAX)最大値荷重条件</p>
+<p>(MIN)最小値荷重条件</p>
+<p>ここで注意が必要なのは、荷重条件の表記の仕方は、これ以前に定義されたK値の計算条件の書式に従わなければならないことです。以下に例を示します。</p>
+<p>(例1)K-2-a-1に対する解析例</p>
+<p>+K-2-a-1<br>
+Ro:57.5[mm]<br>
+Ri:48.5[mm]<br>
+a:4.0[mm]<br>
+c:12.0[mm]<br>
+Series:200,0,0,0[MPa]<br>
+-K-2-a-1<br>
+KCALC<br>
++MF-5-1-1<br>
+*疲労き裂進展データ<br>
+R:0<br>
+Nmax:1000<br>
+dN:100<br>
+Np:100<br>
+(MIN)Series:0,0,0,0[MPa]<br>
+(MAX)Series:600,0,0,0[MPa]<br>
+-MF-5-1-1<br>
+FATIGUE</p>
+<p>上記の場合、K-2-a-1では、荷重条件を応力級数近似で与えることになっているため、疲労き裂進展についてもこれに対応して最大値、最小値を応力級数近似で与える必要があります。</p>
+<p>(例2)K-1-a-1に対する解析例</p>
+<p>+K-1-a-1<br>
+t:40[mm]<br>
+b:100[mm]<br>
+a:20[mm]<br>
+c:30[mm]<br>
+P:2000000[N]<br>
+-K-1-a-1<br>
+KCALC<br>
++MF-5-1-1<br>
+*疲労き裂進展データ<br>
+R:0.0<br>
+Nmax:1000<br>
+dN:1<br>
+Np:100<br>
+(MIN)P:100[N]<br>
+(MAX)P:1e6[N]<br>
+-MF-5-1-1<br>
+FATIGUE</p>
+<p>この場合には、K-1-a-1の解析の荷重条件がPに対して設定するので、最大値、最小値もPに対して設定しなければなりません。つまり、常に、K値の解析における荷重条件と同じ表記を用いなければなりません。</p>
+<p>　</p>
+
+</body>
+
+</html>

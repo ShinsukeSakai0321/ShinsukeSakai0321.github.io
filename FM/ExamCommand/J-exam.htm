@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="ja">
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>新しいページ 1</title>
+</head>
+
+<body>
+
+<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="8" width="786">
+    <tr>
+      <td valign="top" width="259" bgcolor="#C0C0C0">入力</td>
+      <td width="15"></td>
+      <td valign="top" width="474" bgcolor="#C0C0C0">出力</td>
+    </tr>
+    <tr>
+      <td valign="top" width="259"><font size="3">*設問4.2相当<br>
+        +J-2-k-a-2<br>
+        Ri:48.5[mm]<br>
+        Ro:57.5[mm]<br>
+        t:9[mm]<br>
+        a:28[mm]<br>
+        M:25940[N_m]<br>
+        -J-2-k-a-2<br>
+        +M-Exam2<br>
+        Su:490[MPa]<br>
+        Sy:313.6[MPa]<br>
+        E:192.08[GPa]<br>
+        Nu:0.3<br>
+        Ar:5.5<br>
+        n:7<br>
+        cj:1.176<br>
+        mj:0.44<br>
+        -M-Exam2<br>
+        JCALC</font></td>
+      <td width="15"></td>
+      <td valign="top" width="474">Version 1.23 (Released 2007.4.2)<br> 
+        [2007年04月02日18時50分22秒]<br>
+        *設問4.2相当<br>
+        J値の計算条件[J-2-k-a-2]<br>
+        円筒のき裂<br>
+        周方向貫通き裂 Zahoorの解、曲げ<br> 
+        Ref:Zahoor, A.:Ductile Fracture Handbook Volume 1, EPRI NP-6301-D,1989<br> 
+        Range:0&lt;Th/pi&lt;=0.5,5&lt;=R/t&lt;=20<br>
+        Ri=48.5[mm]<br>
+        Ro=57.5[mm]<br>
+        t=9[mm]<br>
+        a=28[mm]<br>
+        M=25940[N_m]<br>
+        材料定数[M-Exam2]<br>
+        Su=490[MPa]<br>
+        Sy=313.6[MPa]<br>
+        E=192.08[GPa]<br>
+        Nu=0.3<br>
+        Ar=5.5<br>
+        n=7<br>
+        cj=1.176<br>
+        mj=0.44<br>
+        --- J値の計算 ---<br> 
+        適用範囲のチェック：<br>
+        ---range satisfied---<br> 
+        J=816660[N/m]</td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+<p>[解説]<br>
+テキストP.390の設問4.2相当の例題です。ただし、完全に対応するものにはなっていません。テキストではRm/t&gt;=10.0の条件は無視していますが、このシステムでは無視していません。また、P.396に掲載されている設問4.2の解答の表では、まずJR値を求め、次にこれに対応する限界モーメントを計算しています。今のシステムでは、このような計算をする機能を作っていないため、仮にa=28mm,M=2.594E4Nmであった場合のJ値の計算例のみを示すこととしました。テキストの「曲げモーメントの計算」の第一行のJR値と比較すると、より大きなJ値が計算されます。これは、Rm/tに関する条件を考慮することによる違いと考えられます。</p>
+<p>なお、本例題のようにき裂長はThを用いて指定もできますし、aによって指定することもできます。両方指定した場合には、aの方が優先されます。この場合、Th=a/Rによって換算された後、計算されます。</p>
+
+</body>
+
+</html>

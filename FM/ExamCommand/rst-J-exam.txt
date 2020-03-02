@@ -1,0 +1,26 @@
+Version 1.23 (Released 2007.4.2)
+[2007年04月02日18時50分22秒]
+*設問4.2相当
+J値の計算条件[J-2-k-a-2]
+円筒のき裂
+周方向貫通き裂 Zahoorの解、曲げ
+Ref:Zahoor, A.:Ductile Fracture Handbook Volume 1, EPRI NP-6301-D,1989
+Range:0<Th/pi<=0.5,5<=R/t<=20
+Ri=48.5[mm]
+Ro=57.5[mm]
+t=9[mm]
+a=28[mm]
+M=25940[N_m]
+材料定数[M-Exam2]
+Su=490[MPa]
+Sy=313.6[MPa]
+E=192.08[GPa]
+Nu=0.3
+Ar=5.5
+n=7
+cj=1.176
+mj=0.44
+--- J値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+J=816660[N/m]

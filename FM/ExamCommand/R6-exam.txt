@@ -1,0 +1,27 @@
+*P.392 ê›ñ‚4.3 Case1
++K-2-k-2
+R:60[mm]
+t:10[mm]
+Ro:65[mm]
+Ri:55[mm]
+Th:60
+M:1.96e4[N_m]
+P:0[N]
+-K-2-k-2
++L-2-k
+-L-2-k
+K2L
++M-Exam1
+Su:490[MPa]
+Sy:313.6[MPa]
+E:192.08[GPa]
+Nu:0.3
+J1c:0.784[MN/m]
+-M-Exam1
+R6
+
+
+
+
+
+

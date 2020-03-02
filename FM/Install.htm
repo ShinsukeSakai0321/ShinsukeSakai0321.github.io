@@ -1,0 +1,161 @@
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title>Install</title>
+<style TYPE="text/css">
+<!--
+    BODY {
+        color: #333333;
+    }
+    H2 {
+        width: 100%;
+        font-weight: bold;
+        color: #ffffff;
+        background-color: #8484ee;
+        border: 1px none #8888f8;
+        border-top: 1px solid #8888f8;
+        border-left: 1px solid #8888f8;
+        border-right: 1px solid #666699;
+        border-bottom: 1px solid #666699;
+        padding: 5px 3px 3px 0.5em;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+    H3 {
+        width: 100%;
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 1.3em;
+        background-color: #8484ee;
+        border: 1px none #8888f8;
+        border-top: 1px solid #8888f8;
+        border-left: 1px solid #8888f8;
+        border-right: 1px solid #666699;
+        border-bottom: 1px solid #666699;
+        padding: 7px 3px 5px 0.5em;
+    }
+    H4 {
+        width: 100%;
+        font-weight: bold;
+        font-size: 1em;
+        color: #ffffff;
+        background-color: #8484ee;
+        border: 1px none #8888f8;
+        border-top: 1px solid #ccccff;
+        border-left: 1px solid #ccccff;
+        border-right: 1px solid #666699;
+        border-bottom: 1px solid #666699;
+        padding: 5px 3px 3px 0.5em;
+    }
+    H5 {
+        font-size: 1em;
+    }
+    A:link {
+        color: #000099;
+    }
+    A:visited {
+        color: #000099;
+    }
+    A:hover {
+        color: #ff0000;
+    }
+    H4 A:link {
+        color: #ffffff;
+    }
+    H4 A:visited {
+        color: #ffffff;
+    }
+    H4 A:hover {
+        color: #ff0000;
+    }
+    P {
+        text-indent: inherit;
+    }
+    .i {
+        margin: 0em 1em 0em 1em;
+    }
+    PRE.c {
+        border: 1px solid gray;
+        padding: 5px;
+        white-space: pre;
+        width: 100%;
+        background-color: #fffff0;
+    }
+    DIV.c {
+        border: 1px solid gray;
+        padding: 5px;
+        width: 100%;
+        background-color: #fffff0;
+    }
+    EM {
+        color: #cc0000;
+        font-style: normal;
+    }
+
+-->
+</style>
+</head>
+<body>
+<IMG SRC="http://counter.geocities.jp/ncounter.cgi?id=tjmrw521" ALT="Counter">&nbsp;                 
+since&nbsp; 2006/12/7                
+<h2><a name="outline">■ 概要</a><a></h2>               
+<div class=i>
+<p>FlawEDは、構造物の健全性評価を支援する目的で、利用者に大きな手間をかけることなく解析が実施できるよう作成されている。構造健全性評価にあたっては、応力拡大係数（Ｋ）、Ｊ積分評価（Ｊ）、極限荷重評価（Ｌ）などの評価を行う必要があるが、さまざまな手法が構造形状や、き裂形状、荷重様式に応じて論文、技術レポート等に掲載されている。FlawEDは、ダウンロードメニューの利用によって、目的に応じて容易に解析手法を選択できるようになっている。また、単位の換算機能、解析対象の画像表示、計算結果のグラフ表示、残留応力分布の級数フィッティングなどさまざまな支援機能を提供している。本システムを「構造健全性評価ハンドブック」とともに活用していただけると幸いです。</p>
+</div>
+<h2></a><a name="feature">■ダウンロード</a></h2>
+<ul>
+<li><p class=MsoNormal><span lang=EN-US>FlawED ver1.00 (2006/12/1)</span></p>               
+<li><p class=MsoNormal><span lang=EN-US>FlawED             
+  ver1.10(2007/1/30)&nbsp;&nbsp; 大幅に機能アップしました。詳細はヘルプを参照してください。<br>           
+  <font color="#FF0000">このバージョンでは、J-2-a,K-2-f-1,K-2-i-1にバグが見つかりました。またL-2-kの例示コマンドにも誤りがありました。破棄した上で、ver1.20以降を再インストールしてください。</font></span></p> 
+<li><p class=MsoNormal><span lang=EN-US>FlawED ver1.20(2007/3/6)<br>          
+  <font color="#FF0000">このバージョンでは、L-2-kおよびコマンド&quot;K2L&quot;に誤りがみつかりました。</font></span></p>  
+<li><p class=MsoNormal><span lang=EN-US>FlawED ver1.21(2007/3/9)</span></p>           
+<li><p class=MsoNormal><span lang=EN-US>FlawEDver1.25(2009/2/2)<br>
+  <font color="#FF0000">コマンドに一部不備がありました。材料データを追加しました．</font></span></p>   
+<li><p class=MsoNormal><span lang=EN-US>FlawEDver1.26(2009/2/13)<br>
+  <font color="#FF0000">このバージョン以前では，R6法の計算でLrの計算に誤りがありました．Syを使うべきところ，Sfを用いて計算していたものを修正．</font></span></p>   
+<li><p class=MsoNormal><span lang=EN-US>FlawEDver1.27(2009/2/18)<br>
+  <font color="#FF0000">K-2-k-2において，THコマンドをき裂全角として計算していたものを，半角で計算するように修正</font></span></p>   
+<li><p class=MsoNormal><span lang=EN-US>FlawEDver1.28(2009/2/26)<br>
+  <font color="#FF0000">テキストP.390，設問4.2に対応できるように変更，CHANGELコマンドの追加</font></span></p>   
+<li><p class=MsoNormal><span lang=EN-US>FlawEDver1.29(2009/2/27)<font color="#FF0000"><br>
+  CHANGEJコマンドの追加</font></span></p>   
+<li><p class=MsoNormal><span lang=EN-US><a href="FlawEDv1_30.lzh">FlawEDver1.30</a>(2009/5/13)<font color="#FF0000"><br>
+  CHANGEKコマンドに誤りがありました</font></span></p>   
+</ul>
+<h2><a name="feature">■インストール手順</a></h2>
+<div class=i>
+<ol>
+<li>上記のダウンロードより、圧縮ファイルをダウンロードする。
+<li>解凍することにより、FawEDSetup.msiとsetup.exeが作成されることを確認する。
+<li>すでにFlawEDをインストールしてあるときには、「削除手順」を実施してから下記のインストールを実行すること。
+<li>setup.exeを起動するとインストールが開始される。
+<li>スタータップメニューに登録されるとともに、デスクトップにFlawEDのアイコンが表示される。
+<li>使用法はFlawEDを起動後に、ヘルプを参照してください。
+</ol>
+</div>
+<h2><a name="feature">■削除手順</a></h2>
+<p>コントロールパネルを開いた後に、「プログラムの追加と削除」により削除してください。
+<h2><a name="feature">■Q & A</a></h2>   
+<p>システムに関する問い合わせに際しては、コマンドファイルとともに、正解の値もあわせてお送りいただけると幸いです。以下は、お問い合わせいただいた質問に対する回答です。</p>   
+<ol>
+  <li><a href="QAFatigue.htm">疲労き裂進展解析における荷重の与え方がわからない</a></li>
+  <li><a href="QAK-2-i-1.htm">表形式データを使うK値の計算がおかしい</a>(Ver.    
+    1.10:2007.3.5)</li>
+  <li><a href="QAFlowStress.htm">極限荷重の評価の計算が合わない</a>(Ver.    
+    1.10:2007.3.6)</li>
+  <li><a href="QAL-2-k.htm">L-2-kの計算がおかしい</a>(Ver. 1.10:2007.3.6)</li>   
+  <li><a href="QAL-2-j.htm">L-2-jの計算がπ倍になっている</a>(2007.3.6)</li>
+  <li><a href="QAK2L.htm">K2Lコマンドを使った計算がおかしい</a>(Ver  
+    1.20: 2007.3.9)</li> 
+</ol>
+<h2><a name="feature">■例題コマンド</a></h2>  
+<p>以下にコマンドの例題を入出力ファイル、解説とともに掲載します。</p>   
+
+<p><a href="ExamCommand/ExamCom.htm">EXAMPLE</a></p>   
+
+<p>　</p>
+</body>
+</html>

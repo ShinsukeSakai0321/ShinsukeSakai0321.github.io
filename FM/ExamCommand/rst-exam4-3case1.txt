@@ -1,0 +1,39 @@
+Version 1.27 (Released 2009.2.18)
+[2009年02月18日17時46分47秒]
+*P.392 設問4.3 Case1
+K値の計算条件[K-2-k-2]
+円筒のき裂
+周方向貫通き裂、ASME Code Case N-513の解
+Ref:(1)ASME Boiler and Pressure Vessel Code, Code Case N-513,
+Evaluation Criteria for Temporary Acceptance of Flaws in Calss 3 Piping,1997
+(2)Klecker,R., Brust, F., and Wilkowski, G.:NRC Leak-Before-Break(LBB-NRC)
+Analysis Method for Circumerentially Through-Wall Cracked Pipes Under
+Axial Plus Bending Loads, Topical Report, NUREG/CR-4572,1986
+
+Range:5<=R/t<=20
+Ro=65[mm]
+Ri=55[mm]
+Th=30
+M=1.96e4[N_m]
+P=0[N]
+L値の計算条件[L-2-k]
+円筒のき裂
+周方向貫通き裂(曲げモーメント)
+Ref:Kanninen M.F., et al.,EPRI NP-2347, Vols 1 and 2, EPRI,Palo Alto,CA, April 1982.
+Range:
+Ro=65[mm]
+Ri=55[mm]
+Th=30
+M=1.96e4[N_m]
+P=0[N]
+材料定数[M-Exam1]
+Su=490[MPa]
+Sy=313.6[MPa]
+E=192.08[GPa]
+Nu=0.3
+J1c=0.784[MN/m]
+*** R6法による評価 ***
+Kp=6.54599e+007,Ks=0[Pa_m1/2]
+χ=0,ρ=0
+Kr=0.160915,Lr=0.604847
+R6法による評価:margin=1.98469

@@ -1,0 +1,18 @@
+* Example of SCC
++K-1-a-1
+t:10[mm]
+b:25[mm]
+a:6[mm]
+c:6[mm]
+P:100000[N]
+M:0[N_m]
+-K-1-a-1
+KCALC
++MS-6-1-1-c-2
+Tmax:11000[hr]
+dT:1000[hr]
+Tp:1000[hr]
+-MS-6-1-1-c-2
+SCC
+
+

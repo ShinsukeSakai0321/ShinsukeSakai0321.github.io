@@ -1,0 +1,25 @@
+Version 1.24 (Released 2007.5.1)
+[2009年02月02日21時10分02秒]
+L値の計算条件[L-2-k]
+円筒のき裂
+周方向貫通き裂(曲げモーメント)
+Ref:Kanninen M.F., et al.,EPRI NP-2347, Vols 1 and 2, EPRI,Palo Alto,CA, April 1982.
+Range:
+Ro=57.5[mm]
+Ri=48.5[mm]
+M=2.86e4[N_m]
+Th=30
+材料定数[M-Exam2]
+Su=490[MPa]
+Sy=313.6[MPa]
+E=192.08[GPa]
+Nu=0.3
+Ar=5.5
+n=7
+cj=1.176
+mj=0.44
+--- L値の計算 ---
+適用範囲のチェック：
+---range satisfied---
+Pc=29159.1
+Lr=0.980825

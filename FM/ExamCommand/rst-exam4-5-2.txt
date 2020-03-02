@@ -1,0 +1,64 @@
+Version 1.29 (Released 2009.2.27)
+[2009年03月09日18時50分15秒]
+K値の計算条件[K-2-b-1]
+円筒のき裂
+軸方向内表面長い表面き裂　Fuhley-Osageの解
+Ref:American Petroleum Institute: Recommended Practice for Fitness-for-Service, API RP 579, 2000
+Range:0.0<=a/t<=0.8,2<=Ri/t<=1000
+Ro=291[mm]
+Ri=275[mm]
+a=11.0[mm]
+Series:141.6,-8.7,0.74,-0.028,-0.012[MPa]
+L値の計算条件[L-2-b]
+円筒のき裂
+円筒内の軸方向き裂・内表面の長い表面き裂
+Ref:Kumar V.,German M.D. and Shih C.F.:EPRI NP-1931,Electric Power Research Institute,Palo Alto,CA,July 1981[L-2-b]
+Range:
+Ro=291[mm]
+Ri=275[mm]
+a=11.0[mm]
+p=8.0[MPa]
+***円筒胴ボンド（内面側）***
+材料定数[M-Exam1]
+Sy=514[MPa]
+Sf=514[MPa]
+E=192[GPa]
+Cv=47.5[J]
+*** R6法による評価 ***
+Kp=1.2513e+008,Ks=0[Pa_m1/2]
+χ=0,ρ=0
+Kr=1.05258,Lr=0.770998
+R6法による評価:margin=0.858551
+***円筒胴ボンド（外面側）***
+材料定数[M-Exam1]
+Sy=514[MPa]
+Sf=514[MPa]
+E=192[GPa]
+Cv=52.0[J]
+*** R6法による評価 ***
+Kp=1.2513e+008,Ks=0[Pa_m1/2]
+χ=0,ρ=0
+Kr=1.00088,Lr=0.770998
+R6法による評価:margin=0.890283
+***円筒胴母材***
+材料定数[M-Exam1]
+Sy=514[MPa]
+Sf=514[MPa]
+E=192[GPa]
+Cv=66.1[J]
+*** R6法による評価 ***
+Kp=1.2513e+008,Ks=0[Pa_m1/2]
+χ=0,ρ=0
+Kr=0.877749,Lr=0.770998
+R6法による評価:margin=0.970644
+***長手継手溶接金属***
+材料定数[M-Exam1]
+Sy=514[MPa]
+Sf=514[MPa]
+E=192[GPa]
+Cv=70.0[J]
+*** R6法による評価 ***
+Kp=1.2513e+008,Ks=0[Pa_m1/2]
+χ=0,ρ=0
+Kr=0.850994,Lr=0.770998
+R6法による評価:margin=0.988891
