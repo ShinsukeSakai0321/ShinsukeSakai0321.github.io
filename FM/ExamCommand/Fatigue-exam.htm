@@ -5,19 +5,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
 <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
-<title>�V�����y�[�W 1</title>
+<title>新しいページ 1</title>
 </head>
 
 <body>
 
 <table cellSpacing="8" cellPadding="0" width="786" border="0">
   <tr>
-    <td vAlign="top" width="259" bgColor="#c0c0c0">����</td>
+    <td vAlign="top" width="259" bgColor="#c0c0c0">入力</td>
     <td width="15"></td>
-    <td vAlign="top" width="474" bgColor="#c0c0c0">�o��</td>
+    <td vAlign="top" width="474" bgColor="#c0c0c0">出力</td>
   </tr>
   <tr>
-    <td vAlign="top" width="259">*P.380�̗��<br>
+    <td vAlign="top" width="259">*P.380の例題<br>
       +K-1-a-1<br>
       t:40[mm]<br>
       b:100[mm]<br>
@@ -27,7 +27,7 @@
       -K-1-a-1<br>
       KCALC<br>
       +MF-5-1-1<br>
-      *��J�����i�W�f�[�^<br>
+      *疲労き裂進展データ<br>
       R:0.0<br>
       Nmax:1000<br>
       dN:1<br>
@@ -38,10 +38,10 @@
       FATIGUE</td>
     <td width="15"></td>
     <td vAlign="top" width="474">Version 1.0 (Released 2006.12.1)<br> 
-      [2006�N12��02��19��35��27�b]<br>
-      *P.380�̗��<br>
-      K�l�̌v�Z����[K-1-a-1]<br>
-      ���̂���E���ȉ~�\�ʂ���ERaju-Newman�̉�<br>
+      [2006年12月02日19時35分27秒]<br>
+      *P.380の例題<br>
+      K値の計算条件[K-1-a-1]<br>
+      平板のき裂・半楕円表面き裂・Raju-Newmanの解<br>
       Ref:(1)Newman,J.C.Jr. and Raju,I.S.,'Stress Intensity Factor Equations for Cracks<br> 
  in Three-Dimensional Finite Bodies',NASA Technical Memorandum 85793,1984<br> 
       <br>
@@ -50,21 +50,21 @@
       a=20[mm]<br>
       c=30[mm]<br>
       P=2000000[N]<br>
-      --- K�l�̌v�Z ---<br> 
-      �K�p�͈͂̃`�F�b�N�F<br>
+      --- K値の計算 ---<br> 
+      適用範囲のチェック：<br>
       ---range satisfied---<br> 
       a=   0.02,c=   0.03,Ka=5.72847e+007,Kb=5.55426e+007[Pa_m^1/2]<br> 
-      --- ��J�����i�W�̌v�Z ---<br> 
-      ��J�v�Z����[MF-5-1-1]<br>
-      �f�[�^:�e��p����єz�Ǘp�t�F���C�g�|�EJSME�ێ��K�i�i��C������ѓ�������j<br>
-      *��J�����i�W�f�[�^<br>
+      --- 疲労き裂進展の計算 ---<br> 
+      疲労計算条件[MF-5-1-1]<br>
+      データ:容器用および配管用フェライト鋼・JSME維持規格（大気中および内部き裂）<br>
+      *疲労き裂進展データ<br>
       R=0.0<br>
       Nmax=1000<br>
       dN=1<br>
       Np=100<br>
       P=100[N]<br>
       P=1e6[N]<br>
-      *** ��J�����i�W�v�Z���� ***<br> 
+      *** 疲労き裂進展計算結果 ***<br> 
       100:a=0.0200115,c=0.0300105<br>
       200:a=0.0200231,c=0.030021<br>
       300:a=0.0200346,c=0.0300315<br>
@@ -79,9 +79,9 @@
   </tr>
 </table>
 
-<p>[���]<br>
-&nbsp;�܂�K�l�̌v�Z������ݒ肵����ɁA�ޗ��f�[�^�̒��́u��J�����i�W�f�[�^�v�̒����瓖�Y�ޗ��f�[�^��I������B���邢��+MF***��-MF***�̊Ԃɋ��܂�镔���ɔ�J�����i�W�f�[�^�𒼐ڏ����Ă��悢�B��J�����i�W�f�[�^�Ƃ��āA��J�����i�W�v�Z�̂��߂̌v�Z�����������B���̍ہA(MAX)�̒���ɍő�׏d���A(MIN)�̒���ɍŏ��׏d�������B�׏d�̏������́AK�l�̒��ŋL�ڂ����׏d�\���`���Ɗ��S�Ɉ�v���Ă��Ȃ���΂Ȃ�Ȃ��B�܂�AK�l�̌v�Z���A�����`���ŕ\��������̂ł���Ȃ�A�ő�A�ŏ��׏d�������`���ŕ\�����Ȃ���΂Ȃ�Ȃ��B</p>
-<p>�@</p>
+<p>[解説]<br>
+&nbsp;まずK値の計算条件を設定した後に、材料データの中の「疲労き裂進展データ」の中から当該材料データを選択する。あるいは+MF***と-MF***の間に挟まれる部分に疲労き裂進展データを直接書いてもよい。疲労き裂進展データとして、疲労き裂進展計算のための計算条件も書く。その際、(MAX)の直後に最大荷重を、(MIN)の直後に最小荷重を書く。荷重の書き方は、K値の中で記載した荷重表現形式と完全に一致していなければならない。つまり、K値の計算が、級数形式で表現するものであるなら、最大、最小荷重も級数形式で表現しなければならない。</p>
+<p>　</p>
 
 </body>
 

@@ -5,19 +5,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
 <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
-<title>�V�����y�[�W 1</title>
+<title>新しいページ 1</title>
 </head>
 
 <body>
 
 <table cellSpacing="8" cellPadding="0" width="786" border="0">
   <tr>
-    <td vAlign="top" width="259" bgColor="#c0c0c0">����</td>
+    <td vAlign="top" width="259" bgColor="#c0c0c0">入力</td>
     <td width="15"></td>
-    <td vAlign="top" width="474" bgColor="#c0c0c0">�o��</td>
+    <td vAlign="top" width="474" bgColor="#c0c0c0">出力</td>
   </tr>
   <tr>
-    <td vAlign="top" width="259">*P.392 �ݖ�4.3 Case1<br> 
+    <td vAlign="top" width="259">*P.392 設問4.3 Case1<br> 
       +K-2-k-2<br>
       R:60[mm]<br>
       t:10[mm]<br>
@@ -40,11 +40,11 @@
       R6</td>
     <td width="15"></td>
     <td vAlign="top" width="474">Version 1.23 (Released 2007.4.2)<br> 
-      [2007�N04��20��20��15��00�b]<br>
-      *P.392 �ݖ�4.3 Case1<br> 
-      K�l�̌v�Z����[K-2-k-2]<br>
-      �~���̂���<br>
-      �������ђʂ���AASME Code Case N-513�̉�<br> 
+      [2007年04月20日20時15分00秒]<br>
+      *P.392 設問4.3 Case1<br> 
+      K値の計算条件[K-2-k-2]<br>
+      円筒のき裂<br>
+      周方向貫通き裂、ASME Code Case N-513の解<br> 
       Ref:(1)ASME Boiler and Pressure Vessel Code, Code Case N-513,<br> 
       Evaluation Criteria for Temporary Acceptance of Flaws in Calss 3 Piping,1997<br> 
       (2)Klecker,R., Brust, F., and Wilkowski, G.:NRC Leak-Before-Break(LBB-NRC)<br> 
@@ -59,27 +59,27 @@
       Th=60<br>
       M=1.96e4[N_m]<br>
       P=0[N]<br>
-      L�l�̌v�Z����[L-2-k]<br>
-      �~���̂���<br>
-      �������ђʂ���(�Ȃ����[�����g)<br>
+      L値の計算条件[L-2-k]<br>
+      円筒のき裂<br>
+      周方向貫通き裂(曲げモーメント)<br>
       Ref:Kanninen M.F., et al.,EPRI NP-2347, Vols 1 and 2, EPRI,Palo Alto,CA, April 1982.<br> 
       Range:<br>
-      �ޗ��萔[M-Exam1]<br>
+      材料定数[M-Exam1]<br>
       Su=490[MPa]<br>
       Sy=313.6[MPa]<br>
       E=192.08[GPa]<br>
       Nu=0.3<br>
       J1c=0.784[MN/m]<br>
-      *** R6�@�ɂ��]�� ***<br> 
+      *** R6法による評価 ***<br> 
       Kp=6.54599e+007,Ks=0[Pa_m1/2]<br>
-      ��=0,��=0<br>
+      χ=0,ρ=0<br>
       Kr=0.160915,Lr=0.780511<br>
-      R6�@�ɂ��]��:margin=1.63691</td>
+      R6法による評価:margin=1.63691</td>
   </tr>
 </table>
 
-<p>[���]<br>
-K��L�̗��҂̏�����ݒ肵����ɁAR6�@�ɑ΂��錒�S���]�������{����B��ʂ�K��L�Ƃ͌v�Z�����������͂��ł���̂ŁAK�̏����ݒ���K2L�R�}���h���g����L�̌v�Z�ł͍ēx�̏����ݒ�͕s�v�ł���B�Ƃ��낪�A�O�a�Ɠ��a��Ro,Ri�ɂ���Ă��\���ł��邪�AR��t�ɂ���Ă��\���ł���B�V�X�e���͂����܂ŁA�n���h�u�b�N�̕\�L�ɏ]���Čv�Z����B���̂悤�ȏꍇ�ɂ́AK2L���g��Ȃ����Ƃɂ��邩�A�����g���̂ł����K�̌v�Z�����̒��ɑS�Ă̕\�L���܂߂Ă����΂悢�BQ&amp;A��6.���Q�Ƃ̂��ƁB</p>
+<p>[解説]<br>
+KとLの両者の条件を設定した後に、R6法に対する健全性評価を実施する。一般にKとLとは計算条件が同じはずであるので、Kの条件設定後はK2Lコマンドを使えばLの計算では再度の条件設定は不要である。ところが、外径と内径はRo,Riによっても表現できるが、Rとtによっても表現できる。システムはあくまで、ハンドブックの表記に従って計算する。このような場合には、K2Lを使わないことにするか、もし使うのであればKの計算条件の中に全ての表記を含めておけばよい。Q&amp;Aの6.を参照のこと。</p>
 
 <p><img border="0" src="R6-exam.JPG" width="545" height="371"></p>
 
