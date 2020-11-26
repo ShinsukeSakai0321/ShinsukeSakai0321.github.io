@@ -25,13 +25,13 @@
         import pandas as pd
         from pandas import DataFrame, Series
         from scipy.stats import norm 
+        # サンプル点の発生
         n=300
         Mr=170
         Sr=20
         Ms=100
         Ss=20
-        k=3
-
+        k=3 #USにおける領域設定のためのパラメータ
         train_set=rel.generate_datablock3(n,Mr,Sr,Ms,Ss,k)
         train_t1 = train_set['t'].values
         Pf=1-sum(train_t1)/len(train_t1)
