@@ -8,7 +8,7 @@
         <p><b>SVM</b>のdecision_functionをg分布と見立て，Lagrange未定乗数法によりDP探索,decision_functionを使って微分値を計算．RSモデルにおいてRとSに次の統計的性質を与える</p>
         \(M_R=170,S_R=20\),\(M_S=100,S_S=20\) <br>
         この場合
-        \(\beta=2.474874\),\(P_f=0.006664164\)，\(D_P=(135 135)\),\(\alpha=(0.7071068,-0.7071068)\)となる<br>
+        \(\beta=2.474874\),\(P_f=0.006664164\)，\(D_P=(135 ,135)\),\(\alpha=(0.7071068,-0.7071068)\)となる<br>
 
         <hr width="500">
         <center>プログラムリスト</center>
@@ -16,7 +16,7 @@
         <FONT SIZE="6">
         <pre>
         <code>
-        from nedo_project import reliability as rel
+        from RBM import reliability as rel
         import numpy as np
         import pandas as pd
         from pandas import DataFrame, Series
