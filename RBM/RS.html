@@ -1,0 +1,59 @@
+<HTML>
+    <HEAD>
+        <TITLE>左</TITLE>
+    </HEAD>
+    <BODY TEXT="#FF0000" BGCOLOR="#90EE90">
+    <code>
+    from nedo_project import reliability as rel
+    import numpy as np
+    import pandas as pd
+    from pandas import DataFrame, Series
+    from scipy.stats import norm 
+    n=300
+    Mr=170
+    Sr=20
+    Ms=100
+    Ss=20
+    k=3
+
+    train_set=rel.generate_datablock3(n,Mr,Sr,Ms,Ss,k)
+    train_t1 = train_set['t'].values
+    Pf=1-sum(train_t1)/len(train_t1)
+    N_s=sum(train_t1)
+    N_f=len(train_t1)-N_s
+    #train_set=UnderSampling(train_set,ratio)
+    #標準化
+    ax=train_set[['x1','x2']].values
+    v_mean=np.array([Mr,Ms])
+    v_std=np.array([Sr,Ss])
+    X_std=(ax-v_mean)/v_std
+    train_x=X_std
+    var_num=train_x.shape[1]
+    # SVMによる解析
+    gamma=0.1
+    from sklearn.svm import SVC
+    svm=SVC(kernel='rbf',C=10,gamma=gamma,probability=True).fit(train_x,train_t1)
+    sv=svm.support_vectors_
+    dp,beta=rel.SV_RF(sv,svm,gamma)
+    print('beta=',beta)
+    Dp=dp*v_std+v_mean
+    print('DP=',Dp)
+    N_s=sum(train_t1)
+    N_f=len(train_t1)-N_s
+    print("Number of fuailure=",N_f)
+    print("Number of safe points=",N_s)
+    #p_vals=svm.predict_proba(np.array(dp).reshape(1,var_num))
+    print('gval=',rel.g(np.array(dp),svm))
+    alpha,deriv=rel.sv_alpha(svm,gamma,dp)
+    print('alpha=',alpha)
+    """
+    beta= 2.4926956715990234
+    DP= [136.12488895 136.57717233]
+    Number of fuailure= 26.0
+    Number of safe points= 274.0
+    gval= 0.0017148711247978454
+    alpha= [ 0.68677202 -0.72687288]
+    """   
+    </code>
+    </BODY>
+</HTML>
