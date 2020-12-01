@@ -24,8 +24,6 @@ for i in range(len(dam_data)):
     print(i,dam_data[i],damage_name[i])
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
-ii=2 #決定木解析を行う損傷機構のインデックス
-max_depth=3
 #決定木解析
 from sklearn import tree
 
@@ -48,6 +46,7 @@ while True:
     ans=input()
     if ans=='y':
         break
+# 決定木図描画
 from IPython.display import Image 
 graph=dtoData.DrawTree(data,dtree)
 Image(graph.create_png())
