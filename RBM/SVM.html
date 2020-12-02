@@ -1,0 +1,56 @@
+<HTML>
+    <HEAD>
+        <TITLE>左</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>プラントのRBM解析に利用された入力データをビッグデータと見立てた上で，決定木解析を行う。対象とするプラントは'A'もしくは'B'である。下記の例題プログラムでは，最初に利用可能な損傷機構一覧が表示される。解析対象の損傷機構ごとに，教師データ，ターゲットデータを学習用とテスト用に切り分ける。その比率は8:2としている。その際，切り分けられたターゲットデータ内での，損傷機構のTrueとFalseの割合が一定となるようにする。登録されている損傷機構がTrueとなる数が少ない場合には{ERROR}表示をする。学習用データで開発された損傷機構に対する推論エンジンを用いて，学習用，テスト用データに対する推論を行ない，各ターゲットデータとの比較により精度評価を行い出力する。</p>
+     
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="6">
+        <pre>
+        <code>
+from RBM import DataTreatO as dto
+df,rename_term,rename_damage=dto.GetData(plant='A') #'A' もしくは 'B' の指定
+# インスタンス生成
+dtoData=dto.DataTreatO(df,rename_term,rename_damage)
+# データ加工
+data,t_data,damage=dtoData.DataTreat()
+dam_data,damage_name=dtoData.DamageTake(damage)
+# 利用可能な損傷機構の一覧
+for i in range(len(dam_data)):
+    print(i,dam_data[i],damage_name[i])
+import numpy as np
+from sklearn import preprocessing
+import pandas as pd
+ii=1
+for ii in range(len(dam_data)):
+    damData=damage[dam_data[ii]]
+    target=pd.DataFrame(np.array(damData),columns=[dam_data[ii]])
+    #標準化
+    ss = preprocessing.StandardScaler()
+    normData=ss.fit_transform(data)
+    from sklearn.svm import SVC
+    from sklearn.model_selection import train_test_split
+    C=10; gamma=0.1
+    # SVMによる解析
+    # trainとtestへの切り分け，targetの比率が各々に反映されるようstratifyオプションを指定
+    nd=target[dam_data[ii]].value_counts()['True'] #登録されている損傷数
+    print('*****   Damage mode:{}   *****'.format(damage_name[ii]))
+    try:
+        X_train, X_test, y_train, y_test = train_test_split(normData, target, test_size=0.2, random_state=100,stratify=target)
+        svc=SVC(kernel='rbf',C=10,gamma=0.1).fit(X_train,y_train)
+        print('登録されている損傷数 {}'.format(nd))
+        print('Accuracy on training set:{:.2f}'.format(svc.score(X_train,y_train)))
+        print('Accuracy on test set:{:.2f}'.format(svc.score(X_test,y_test)))
+    except Exception:
+        print('[ERROR]登録されている損傷数 {} は少な過ぎます'.format(nd))  #例外処理
+</code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
