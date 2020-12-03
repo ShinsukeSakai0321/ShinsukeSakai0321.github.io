@@ -1,0 +1,152 @@
+<HTML>
+    <HEAD>
+        <TITLE>左</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>プラントのRBM解析に利用された入力データをビッグデータと見立てた上で，ニューラルネットワークによる解析を行う。対象とするプラントは'A'もしくは'B'である。下記の例題プログラムでは，最初に利用可能な損傷機構一覧が表示される。解析対象の損傷機構ごとに，教師データ，ターゲットデータを学習用とテスト用に切り分ける。その比率は8:2としている。その際，切り分けられたターゲットデータ内での，損傷機構のTrueとFalseの割合が一定となるようにする。登録されている損傷機構がTrueとなる数が少ない場合には[ERROR]表示をする。学習用データで開発された損傷機構に対する推論エンジンを用いて，学習用，テスト用データに対する推論を行ない，各ターゲットデータとの比較により精度評価を行い出力する。</p>
+        <p>学習時において，学習パラメータは<a href="https://tech.preferred.jp/ja/blog/optuna-release/">Optuna</a>を用いて最適化される。学習過程において，計算効率向上のため枝刈りを行っている。</p>
+     
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+from RBM import DataTreatO as dto
+df,rename_term,rename_damage=dto.GetData(plant='A') #'A' もしくは 'B' の指定
+# インスタンス生成
+dtoData=dto.DataTreatO(df,rename_term,rename_damage)
+# データ加工
+data,t_data,damage=dtoData.DataTreat()
+dam_data,damage_name=dtoData.DamageTake(damage)
+# 利用可能な損傷機構の一覧
+for i in range(len(dam_data)):
+    print(i,dam_data[i],damage_name[i])
+var_num=len(data.columns)
+def create_model(num_layer,mid_units,dropout_rate,l2_reg): #2020.2.3追加, 2.25 kernel_regularizer追加
+    """
+    num_layer : 畳み込み層の数
+    mid_units : 中間層のユニット数
+    var_num   : 項目数　-->Optuna3-R10からの変更点
+    """
+    #モデルの定義
+    model=Sequential()
+    #var_num=7   ########      限界状態関数内の設計変数の数をセットすること  ###########
+    #ネットワークの定義
+    model.add(Dense(10,activation='relu',input_shape=(var_num,))) 
+    for i in range(1,num_layer):
+        model.add(Dense(mid_units,activation='relu',
+                       kernel_regularizer=regularizers.l2(l2_reg)))
+        keras.layers.Dropout(rate=dropout_rate) #2020.2.3追加
+    model.add(Dense(2,activation='sigmoid'))
+    return model
+
+import keras.backend as K
+import keras.callbacks
+def objective(trial):
+    # 前のセッションをクリアする
+    keras.backend.clear_session()
+    #lr = trial.suggest_loguniform('learning_rate', 1e-5, 1e-2)
+    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+                              patience=5, min_lr=1e-5)
+    dropout_rate = trial.suggest_uniform('dropout_rate', 0.0, 0.5)
+    l2_reg=trial.suggest_uniform('l2_reg',0.01,0.05) #2020.2.25追加
+    optimizer = trial.suggest_categorical("optimizer", ["sgd", "adam", "rmsprop"])
+    num_layer = trial.suggest_int('num_layer',1,10)
+    mid_units=trial.suggest_int("mid_units",1,10)
+    epochs=trial.suggest_int("epochs",20,70)
+    model=create_model(num_layer,mid_units,dropout_rate,l2_reg) #2020.2.3追加, 2.25追加
+    # モデルのサマリの確認
+    #model.summary()
+
+    #モデルのコンパイル
+    model.compile(loss='binary_crossentropy',
+                 optimizer=optimizer,
+                 metrics=['accuracy'])
+    # 学習
+    history=model.fit(X_train,y_train,
+                     batch_size=20,
+                     epochs=epochs,
+                     verbose=1,
+                      #callbacks=[reduce_lr]
+                      callbacks=[KerasPruningCallback(trial, "acc")],
+                      validation_data=(X_test,y_test)
+                     )
+    return 1 - history.history["accuracy"][-1]
+import numpy as np
+from sklearn import preprocessing
+import pandas as pd
+ii=0
+damData=damage[dam_data[ii]]
+target=pd.DataFrame(np.array(damData),columns=[dam_data[ii]])
+#標準化
+ss = preprocessing.StandardScaler()
+normData=ss.fit_transform(data)
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+C=10; gamma=0.1
+# SVMによる解析
+# trainとtestへの切り分け，targetの比率が各々に反映されるようstratifyオプションを指定
+nd=target[dam_data[ii]].value_counts()['True'] #登録されている損傷数
+print('*****   Damage mode:{}   *****'.format(damage_name[ii]))
+# target内の'False','True'->False,True
+from distutils.util import strtobool
+for i in range(len(target)):
+    target[target.columns.values[0]][i]=strtobool(target[target.columns.values[0]][i])
+target
+X_train, X_test, y_train, y_test = train_test_split(normData, target, test_size=0.2, random_state=100,stratify=target)
+y_train=keras.utils.to_categorical(y_train)
+y_test=keras.utils.to_categorical(y_test)
+import keras
+from keras.models import Sequential
+from keras.layers import Dense,Dropout,Activation #2020.2.3追加
+from keras import regularizers #2020.2.25追加
+from keras import optimizers
+import optuna
+from optuna.integration import KerasPruningCallback
+# 学習プロセス
+study = optuna.create_study(pruner=optuna.pruners.MedianPruner())
+study.optimize(objective, n_trials=50,timeout=300) #30分でストップ
+# 結果の表示
+print("Best trial:")
+trial = study.best_trial
+print("  Value: ", trial.value)
+print("  Params: ")
+for key, value in trial.params.items():
+    print(f"    {key}: {value}")
+    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2,
+    patience=5, min_lr=1e-5)
+# ベストモデルに対する評価
+K.clear_session()
+# ベストモデルの作成
+model=create_model(trial.params['num_layer'],trial.params['mid_units'],trial.params['dropout_rate'],trial.params['l2_reg'])
+#モデルのコンパイル
+model.compile(loss='binary_crossentropy',
+optimizer=trial.params['optimizer'],
+metrics=['accuracy'])
+# 学習
+history=model.fit(X_train,y_train,
+batch_size=20,
+epochs=trial.params['epochs'],
+verbose=1,
+callbacks=[reduce_lr]
+)
+from sklearn.metrics import accuracy_score
+pred=model.predict(X_train)
+pred_t=np.round(pred[:,0])
+y_target=y_train[:,0]
+accuracy=accuracy_score(y_target,pred_t)
+print('accuracy for train=',accuracy)
+pred=model.predict(X_test)
+pred_t=np.round(pred[:,0])
+y_target=y_test[:,0]
+accuracy=accuracy_score(y_target,pred_t)
+print('accuracy for test=',accuracy)
+</code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
