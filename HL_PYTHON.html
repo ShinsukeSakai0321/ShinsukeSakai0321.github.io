@@ -1,0 +1,94 @@
+<HTML>
+    <HEAD>
+        <TITLE>レインフロー法による疲労被害評価ソフト(PYTHON版)</TITLE>
+    </HEAD>
+    <BODY BGCOLOR="#00FF00">    
+        <h1>レインフロー法による疲労被害評価ソフト(PYTHON版)</h1>
+        <h2>概要</h2>
+        <p>
+            ビーク値の時刻歴データからレインフロー計数と実質同じ結果を与えるヒステリシスループ計数を行う機能をGitHub上からパッケージとして提供する．パッケージ名はHLである．ヒステリシスループ法の詳細は文献[1]を参照のこと．
+        </p>
+        <h2>パッケージHLの利用法</h2>
+        <ol>
+            <li>ターミナルモードで以下のコマンドを入力し，RBMモジュールをインストールする<br>
+                pip install git+https://github.com/ShinsukeSakai0321/RBM</li>
+            <li>プログラム内で以下のimport文でHLoopモジュールを読み込む<br>
+                from RBM import HLoop as hloop</li>
+            <li>登録されているコマンドは以下のhelp文で確認できる<br>
+                help(hloop)</li>
+        </ol>
+        <h2>登録されているコマンド</h2>
+        <table border="1">
+            <tr>
+                <th>コマンド</th><th>内容</th>
+            </tr>
+            <tr>
+                <td>PeakCalc</td><td>時系列波形からピーク値を算出する</td>
+            </tr>
+            <tr><td>hloop</td><td>self.Peakに対してヒステリシスループ法を適用し，半波の情報を戻す</td>
+            </tr>
+            <tr>
+                <td>demo_data</td><td>サンプル波形データのリストを戻す</td>
+            </tr>
+            <tr>
+                <td>SetWave</td><td>波形データをインスタンスにセット</td>
+            </tr>
+            <tr>
+                <td>GetRes</td><td>波形計数処理後のデータの取得</td>
+            </tr>
+            <tr>
+                <td>Calc</td><td>登録されている波形データに対し，ピーク値計算，波形計数処理を行う</td>
+            </tr>  
+            <tr>
+                <td>GetPeak</td><td>計算されたピーク値リストの取得</td>
+            </tr>
+            <tr>
+                <td>peak</td><td>相続く3点の波形データからビーク値判定を行い，ピーク値を戻す</td>
+            </tr>
+            <tr>
+                <td>PeakCalc</td><td>self.Waveのピーク値評価を行い結果をself.Peakに入力</td>
+            </tr>          
+        </table>
+        
+        <h2>例題1</h2>
+        <p>サンプルデータに対して波形計数処理を実施する</p>
+        <pre>
+            from RBM import HLoop as hloop
+            hl=hloop.HL()
+            wave=hl.demo_data()
+            hl.SetWave(wave)
+            hl.Calc()
+            halfR,halfM=hl.GetRes()
+            print('half range=',halfR)
+            print('half mean=',halfM)     
+        </pre>
+        この結果，以下の出力を確認する．
+        <pre>
+            half range= [0.021989285714285715, 0.021989285714285715, 0.01238185975609756, 0.01238185975609756,
+            0.08263670741023682, 0.04894241486068111, 0.018175837320574165]
+            half mean= [-0.009969642857142856, -0.009969642857142856, 0.0049096798780487805, 0.0049096798780487805,
+            0.003540412528647823, -0.013306733746130032, 0.0020765550239234447]
+     
+        </pre>
+        <h2>例題2</h2>
+        <p>サンプルデータに対してピーク値計算を実施する</p>
+        <pre>
+            from RBM import HLoop as hloop
+            hl=hloop.HL()
+            wave=hl.demo_data()
+            hl.SetWave(wave)
+            hl.PeakCalc()
+            peak=hl.GetPeak()
+            print('peak value=',peak)
+        </pre>
+        この結果，以下の出力を確認する．
+        <pre>
+            peak value= [0.04485876623376624, -0.03777794117647059, 0.001025, 
+            -0.020964285714285713, 0.01110060975609756, -0.00128125, 
+            0.011164473684210526, -0.007011363636363637]
+        </pre>
+        <h2>参考文献</h2>
+        [1]岡村弘之，板垣　浩著「強度の統計的取り扱い」，培風館， 4.3疲労の安全寿命
+        
+    </BODY>
+</HTML>
