@@ -13,7 +13,7 @@
             <li>ターミナルモードで以下のコマンドを入力し，RBMモジュールをインストールする<br>
                 pip install git+https://github.com/ShinsukeSakai0321/RBM</li>
             <li>プログラム内で以下のimport文でHLoopモジュールを読み込む<br>
-                from RBM import HLoop as hloop</li>
+                from RBM import Hloop as hloop</li>
             <li>登録されているコマンドは以下のhelp文で確認できる<br>
                 help(hloop)</li>
         </ol>
@@ -53,7 +53,7 @@
         <h2>例題1</h2>
         <p>サンプルデータに対して波形計数処理を実施する</p>
         <pre>
-            from RBM import HLoop as hloop
+            from RBM import Hloop as hloop
             hl=hloop.HL()
             wave=hl.demo_data()
             hl.SetWave(wave)
@@ -73,7 +73,7 @@
         <h2>例題2</h2>
         <p>サンプルデータに対してピーク値計算を実施する</p>
         <pre>
-            from RBM import HLoop as hloop
+            from RBM import Hloop as hloop
             hl=hloop.HL()
             wave=hl.demo_data()
             hl.SetWave(wave)
