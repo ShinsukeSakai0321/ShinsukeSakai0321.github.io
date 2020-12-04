@@ -1,0 +1,153 @@
+<HTML>
+    <HEAD>
+        <TITLE>左</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>HPIS Z109に対応する評価．R-packageのPSFCalcの中のMetalLoss関数参照，API579-1/ASME FFS-1第二版による</p>
+        $$g=P_{bc}-P_{a}\\
+        P_{bc}=R_{SF}\cdot P_{bi}\\
+        P_{bi}=\left ( \frac{e}{n} \right )^n \left ( \frac{0.25}{n+0.227} \right ) ln \left (1 + \frac{2t_c}{D} \right ) \sigma _u\\
+        R_{SF}=\frac{R_t}{1-\frac{1-R_t}{M_t}}\\
+        M_t=1.0010 - 0.014195 * \lambda + 0.29090 * \lambda^2 - 0.096420 * \lambda^3 + 0.020890 * \lambda^4 - 0.0030540 * \lambda^5 + 2.9570*10^{-4} * \lambda^6 - 1.8462*10^{-5} * \lambda^7 + 7.1553*10^{-7} * \lambda^8 - 1.531*10^{-8} * \lambda^9 + 1.4656*10^{-10} * \lambda^{10}\\
+        t_c=tr-FCA\\
+        R_t=\frac{t_{mm}-FCA}{t_c}\\
+        FCA=C_v*ttime\\
+        \lambda=\frac{1.285*s}{\sqrt{D \cdot t_c}}
+        $$
+        <p>平均値，COVは\(C_v,P_a,tr,no,D_i,S_u,s,t_{mm}\)について  
+            (0.1,0.5),(2.2,0.1),(13,1e-6),(0.2,1e-6),(2400,1e-6),(469,0.07),(1000,1e-6),(8,0.01)  
+            \(ttime=8\)としている．
+            
+            このとき，\(\beta=2.350336,P_f= 0.009378237\)  
+            \(\alpha= (-0.3920234, -0.8182953, 1.148204e-06, -8.123592e-07, -5.260083e-06, 0.4167402, -5.159159e-07, 0.0551186)\)   
+            \(D_P=(0.1409229,2.7167782,13.0000000,0.2000000,2400.0000000,436.8436913,1000.0000000,7.9896362)\)</p>
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+from scipy.stats import norm 
+import math
+import numpy as np
+import pandas as pd
+from pandas import DataFrame, Series
+np.random.seed(20160614)
+from pyDOE import *
+##################### LHS+USによるサンプル点の発生 #######################
+def generate_datablock10k(n,MCv,SCv,MPa,SPa,Mtr,Str,Mno,Sno,MDi,SDi,MSu,SSu,Ms,Ss,Mtmm,Stmm,ttime,k):
+    #Latin Hypercube Sampling
+    design = lhs(8, samples=n,criterion='maximin')
+    u=design
+    means = [MCv,MPa,Mtr,Mno,MDi,MSu,Ms,Mtmm]
+    stdvs = [SCv,SPa,Str,Sno,SDi,SSu,Ss,Stmm]
+    for i in range(8):
+        u[:, i] = k*stdvs[i]*(2*design[:,i]-1)+means[i]
+
+    dCv=u[:,0]
+    dPa=u[:,1]
+    dtr=u[:,2]
+    dno=u[:,3]
+    dDi=u[:,4]
+    dSu=u[:,5]
+    ds=u[:,6]
+    dtmm=u[:,7]
+    df = DataFrame(dCv, columns=['x1'])
+    df['x2']=dPa
+    df['x3']=dtr
+    df['x4']=dno
+    df['x5']=dDi
+    df['x6']=dSu
+    df['x7']=ds
+    df['x8']=dtmm
+    df['t']=0
+    aa=np.zeros(n)
+    cc=[-0.014195,0.29090,-0.096420, 0.020890,-0.0030540,2.9570e-4,-1.8462e-5,7.1553e-7,-1.531e-8,1.4656e-10]
+    for i in range(n):
+        FCA=dCv[i]*ttime
+        tc=dtr[i]-FCA
+        Rt=(dtmm[i]-FCA)/tc
+        lam=1.285*ds[i]/math.sqrt(dDi[i]*tc)
+        ll=[lam,lam**2,lam**3,lam**4,lam**5,lam**6,lam**7,lam**8,lam**9,lam**10]
+        Mt=1.001+np.dot(cc,ll)
+        Rsf=Rt/(1-(1-Rt)/Mt)
+        Pbi=(2.718282/dno[i])**dno[i]*(0.25/(dno[i]+0.227))*math.log(1+2*tc/dDi[i])*dSu[i]
+        Pbc=Rsf*Pbi
+        aa[i]=(np.sign(Pbc-dPa[i])+1)/2
+    df['t']=aa
+    return df
+
+n=300
+k=4
+MCv=0.1
+SCv=0.5*MCv
+MPa=2.2
+SPa=0.1*MPa
+Mtr=13
+Str=1e-6*Mtr
+Mno=0.2
+Sno=1e-6*Mno
+MDi=2400
+SDi=1e-6*MDi
+MSu=469
+SSu=0.07*MSu
+Ms=1000
+Ss=1e-6*Ms
+Mtmm=8
+Stmm=0.01*Mtmm
+ttime=8
+train_set=generate_datablock10k(n,MCv,SCv,MPa,SPa,Mtr,Str,Mno,Sno,MDi,SDi,MSu,SSu,Ms,Ss,Mtmm,Stmm,ttime,k)
+ax = train_set[['x1','x2','x3','x4','x5','x6','x7','x8']].values
+train_t1 = train_set['t'].values.reshape([len(train_set), 1])
+v_mean=np.array([MCv,MPa,Mtr,Mno,MDi,MSu,Ms,Mtmm])
+v_std=np.array([SCv,SPa,Str,Sno,SDi,SSu,Ss,Stmm])
+X_std=(ax-v_mean)/v_std
+train_x=X_std
+var_num=train_x.shape[1]  
+##########################  SVMによる解析  ######################################
+from RBM import reliability as rel
+C=10.0
+gamma=0.1
+from sklearn.svm import SVC
+svm=SVC(kernel='rbf',C=C,gamma=gamma,probability=True).fit(train_x,train_t1)
+sv=svm.support_vectors_
+sv_labels=svm.dual_coef_.ravel()>0
+dp,beta=rel.SV_RF(sv,svm,gamma)
+print('beta=',beta)
+Dp=dp*v_std+v_mean
+print('DP=',Dp)
+N_s=sum(train_t1)
+N_f=len(train_t1)-N_s
+print("Number of fuailure=",N_f)
+print("Number of safe points=",N_s)
+#p_vals=svm.predict_proba(np.array(dp).reshape(1,var_num))
+print('gval=',rel.g(np.array(dp),svm))
+alpha,deriv=rel.sv_alpha(svm,gamma,dp)
+print('alpha=',alpha)
+###################   感度値の描画  ####################
+import matplotlib.pyplot as plt
+import numpy as np
+alpha_th=[-0.39,-0.82,1.15e-6,-8.12e-7,-5.26e-6,0.42,-5.16e-7,0.055]
+
+x = np.array([r'$C_v$', r'$P_a$',r'$t$',r'$n_o$',r'$D$',r'$\sigma_u$',r'$s$',r'$t_{mm}$'])
+x_position = np.arange(len(x))
+
+
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+ax.bar(x_position,alpha_th, width=0.4, label='FOSM')
+ax.bar(x_position + 0.4, alpha, width=0.4, label='SVM')
+ax.legend()
+ax.set_xticks(x_position + 0.2)
+ax.set_xticklabels(x)
+ax.set_ylabel(r'$\eta$')
+ax.set_xlabel('Parameter')
+plt.savefig('alpha.eps')
+plt.show()
+        </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
