@@ -1,0 +1,53 @@
+<HTML>
+    <HEAD>
+        <TITLE>混合行列表示</TITLE>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>プラントのRBM解析に利用された入力データをビッグデータと見立てた上で，決定木解析を行う。対象とするプラントは'A'もしくは'B'である。下記の例題プログラムでは，最初に利用可能な損傷機構一覧が表示される。次に，全損傷機構について，推論を行い，損傷機構数，精度，混合行列の表示を行う。</p>
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+from RBM import DataTreatO as dto
+import pandas as pd
+import numpy as np
+df,rename_term,rename_damage=dto.GetData(plant='A') #'A' もしくは 'B' の指定
+# インスタンス生成
+dtoData=dto.DataTreatO(df,rename_term,rename_damage)
+# データ加工
+data,t_data,damage=dtoData.DataTreat()
+dam_data,damage_name=dtoData.DamageTake(damage)
+# 利用可能な損傷機構の一覧
+for i in range(len(dam_data)):
+    print(i,dam_data[i],damage_name[i])
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+
+max_depth=3
+#決定木解析
+from sklearn import tree
+for ii in range(len(dam_data)):
+    max_depth=int(max_depth)
+    dtree = tree.DecisionTreeClassifier(max_depth=max_depth)
+    DamageMode=dam_data[ii]
+    damage_name=rename_damage.iloc[ii,0]
+    damData=damage[dam_data[ii]]
+    target=pd.DataFrame(np.array(damData),columns=[dam_data[ii]])
+    nd=target[dam_data[ii]].value_counts()['True'] #登録されている損傷数
+    dtree = dtree.fit(data, damage[DamageMode])
+    predicted = dtree.predict(data)
+    mat=confusion_matrix(damage[DamageMode],predicted)
+    accuracy=accuracy_score(damage[DamageMode],predicted)
+    print('************',damage_name,'**********')
+    print('登録されている損傷数:',nd)
+    print('accuracy=',accuracy)
+    print(mat)
+        </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>

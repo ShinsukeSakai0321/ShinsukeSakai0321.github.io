@@ -1,0 +1,50 @@
+<HTML>
+    <HEAD>
+        <TITLE>教師データ，テストデータに対する精度</TITLE>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>プラントのRBM解析に利用された入力データをビッグデータと見立てた上で，決定木解析を行う。対象とするプラントは'A'もしくは'B'である。下記の例題プログラムでは，最初に利用可能な損傷機構一覧が表示される。次に，全損傷機構について，train,testに8:2の割合で切り分ける。trainについて推論エンジンを開発し，train,testの入力データから推論させる。各targetデータとの比較により精度検証を行う。</p>
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+from RBM import DataTreatO as dto
+import pandas as pd
+import numpy as np
+df,rename_term,rename_damage=dto.GetData(plant='B') #'A' もしくは 'B' の指定
+# インスタンス生成
+dtoData=dto.DataTreatO(df,rename_term,rename_damage)
+# データ加工
+data,t_data,damage=dtoData.DataTreat()
+dam_data,damage_name=dtoData.DamageTake(damage)
+# 利用可能な損傷機構の一覧
+for i in range(len(dam_data)):
+    print(i,dam_data[i],damage_name[i])
+from sklearn.model_selection import train_test_split
+max_depth=3
+#決定木解析
+from sklearn import tree
+for ii in range(len(dam_data)):
+    max_depth=int(max_depth)
+    dtree = tree.DecisionTreeClassifier(max_depth=max_depth)
+    damData=damage[dam_data[ii]]
+    target=pd.DataFrame(np.array(damData),columns=[dam_data[ii]])
+    nd=target[dam_data[ii]].value_counts()['True'] #登録されている損傷数
+    print('*****   Damage mode:{}   *****'.format(damage_name[ii]))
+    try:
+        X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=100,stratify=target)
+        dtree = dtree.fit(X_train, y_train)
+        print('登録されている損傷数 {}'.format(nd))
+        print('Accuracy on training set:{:.2f}'.format(dtree.score(X_train,y_train)))
+        print('Accuracy on test set:{:.2f}'.format(dtree.score(X_test,y_test)))
+    except Exception:
+        print('[ERROR]登録されている損傷数 {} は少な過ぎます'.format(nd))  #例外処理
+        </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
