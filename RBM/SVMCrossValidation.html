@@ -1,0 +1,53 @@
+<HTML>
+    <HEAD>
+        <TITLE>層化k交差検証による精度検証</TITLE>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>プラントのRBM解析に利用された入力データをビッグデータと見立てた上で，決定木解析を行う。対象とするプラントは'A'もしくは'B'である。下記の例題プログラムでは，最初に利用可能な損傷機構一覧が表示される。次に，層化k交差検証による精度検証を行う。kの数は5としている。</p>
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+from RBM import DataTreatO as dto
+df,rename_term,rename_damage=dto.GetData(plant='A') #'A' もしくは 'B' の指定
+# インスタンス生成
+dtoData=dto.DataTreatO(df,rename_term,rename_damage)
+# データ加工
+data,t_data,damage=dtoData.DataTreat()
+dam_data,damage_name=dtoData.DamageTake(damage)
+# 利用可能な損傷機構の一覧
+for i in range(len(dam_data)):
+    print(i,dam_data[i],damage_name[i])
+from sklearn.model_selection import cross_val_score
+import numpy as np
+from sklearn import preprocessing
+import pandas as pd
+ii=1
+for ii in range(len(dam_data)):
+    damData=damage[dam_data[ii]]
+    target=pd.DataFrame(np.array(damData),columns=[dam_data[ii]])
+    #標準化
+    ss = preprocessing.StandardScaler()
+    normData=ss.fit_transform(data)
+    from sklearn.svm import SVC
+    C=10; gamma=0.1
+    svc=SVC(kernel='rbf',C=10,gamma=0.1)
+    # SVMによる解析
+    # trainとtestへの切り分け，targetの比率が各々に反映されるようstratifyオプションを指定
+    nd=target[dam_data[ii]].value_counts()['True'] #登録されている損傷数
+    print('*****   Damage mode:{}   *****'.format(damage_name[ii]))
+    try:
+        scores = cross_val_score(svc,normData,target,cv=5)
+        print('登録されている損傷数 {}'.format(nd))
+        print('Cross-validation scores: {}'.format(scores))
+    except Exception:
+        print('[ERROR]登録されている損傷数 {} は少な過ぎます'.format(nd))  #例外処理
+        </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
