@@ -1,0 +1,140 @@
+<HTML>
+    <HEAD>
+        <TITLE>円筒容器の破裂 Svensonの式</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>円筒容器の破裂，Svensonの式</p>
+        <p>$$g=\left ( \frac{e}{n} \right )^n \left ( \frac{0.25}{n+0.227} \right ) ln \left (1 + \frac{2t_r}{D} \right ) \sigma _u -P_a$$
+
+            各変数の(平均値，COV)は，\(P_a\),\(n\),\(t_r\),\(D\),\(\sigma_u\)について，各々           
+            ( 4.6,0.03),(0.2,0.01),(13,0.01)(2400,1e-3)(469,0.02)とする．
+            このとき，\(P_f=0.01467995\),\(\beta=2.17862\),
+            \(D_P=(4.834586,0.2001745,12.92253,2400.142,457.5483)\),
+            \(\alpha=(-0.7802631,-0.04004047,0.2735232,-0.02718771,0.5603858 )\)である．
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+from scipy.stats import norm 
+import math
+import numpy as np
+import pandas as pd
+from pandas import DataFrame, Series
+np.random.seed(20160614)
+from pyDOE import *
+##################### LHS+USによるサンプル点の発生 #######################
+def generate_datablock9k(n,MPa,SPa,Mno,Sno,Mtr,Str,MDi,SDi,MSu,SSu,k):
+    #Latin Hypercube Sampling
+    design = lhs(5, samples=n,criterion='maximin')
+    u=design
+    means = [MPa,Mno,Mtr,MDi,MSu]
+    stdvs = [SPa,Sno,Str,SDi,SSu]
+    for i in range(5):
+        u[:, i] = k*stdvs[i]*(2*design[:,i]-1)+means[i]
+
+    dPa=u[:,0]
+    dno=u[:,1]
+    dtr=u[:,2]
+    dDi=u[:,3]
+    dSu=u[:,4]
+    df = DataFrame(dPa, columns=['x1'])
+    df['x2']=dno
+    df['x3']=dtr
+    df['x4']=dDi
+    df['x5']=dSu
+    df['t']=0
+    aa=np.zeros(n)
+    for i in range(n):
+        aa[i]=(np.sign((2.718282/dno[i])**dno[i]*(0.25/(dno[i]+0.227))*math.log(1+2*dtr[i]/dDi[i])*dSu[i]-dPa[i])+1)/2
+    #df['t']=(np.sign((2.718282/dno)**dno*(0.25/(dno+0.227))*math.log(1+2*dtr/dDi)*dSu-dPa)+1)/2
+    df['t']=aa
+    return df
+def generate_datablock9(n,MPa,SPa,Mno,Sno,Mtr,Str,MDi,SDi,MSu,SSu):
+    dPa=np.random.normal(MPa,SPa,n)
+    dno=np.random.normal(Mno,Sno,n)
+    dtr=np.random.normal(Mtr,Str,n)
+    dDi=np.random.normal(MDi,SDi,n)
+    dSu=np.random.normal(MSu,SSu,n)
+    df = DataFrame(dPa, columns=['x1'])
+    df['x2']=dno
+    df['x3']=dtr
+    df['x4']=dDi
+    df['x5']=dSu
+    df['t']=0
+    aa=np.zeros(n)
+    for i in range(n):
+        aa[i]=(np.sign((2.718282/dno[i])**dno[i]*(0.25/(dno[i]+0.227))*math.log(1+2*dtr[i]/dDi[i])*dSu[i]-dPa[i])+1)/2
+    #df['t']=(np.sign((2.718282/dno)**dno*(0.25/(dno+0.227))*math.log(1+2*dtr/dDi)*dSu-dPa)+1)/2
+    df['t']=aa
+    return df
+
+n=500
+k=3
+MPa=4.6
+SPa=0.03*MPa
+Mno=0.2
+Sno=0.01*Mno
+Mtr=13.0
+Str=0.01*Mtr
+MDi=2400
+SDi=1e-3*MDi
+MSu=469
+SSu=0.02*MSu
+
+train_set=generate_datablock9k(n,MPa,SPa,Mno,Sno,Mtr,Str,MDi,SDi,MSu,SSu,k)
+ax = train_set[['x1','x2','x3','x4','x5']].values
+train_t1 = train_set['t'].values.reshape([len(train_set), 1])
+v_mean=np.array([MPa,Mno,Mtr,MDi,MSu])
+v_std=np.array([SPa,Sno,Str,SDi,SSu])
+X_std=(ax-v_mean)/v_std
+train_x=X_std
+var_num=train_x.shape[1]
+
+##########################  SVMによる解析  ######################################
+from RBM import reliability as rel
+C=10.0
+gamma=0.1
+from sklearn.svm import SVC
+svm=SVC(kernel='rbf',C=C,gamma=gamma,probability=True).fit(train_x,train_t1)
+sv=svm.support_vectors_
+sv_labels=svm.dual_coef_.ravel()>0
+dp,beta=rel.SV_RF(sv,svm,gamma)
+print('beta=',beta)
+Dp=dp*v_std+v_mean
+print('DP=',Dp)
+N_s=sum(train_t1)
+N_f=len(train_t1)-N_s
+print("Number of fuailure=",N_f)
+print("Number of safe points=",N_s)
+#p_vals=svm.predict_proba(np.array(dp).reshape(1,var_num))
+print('gval=',rel.g(np.array(dp),svm))
+alpha,deriv=rel.sv_alpha(svm,gamma,dp)
+print('alpha=',alpha)
+
+###################   感度値の描画  ####################
+import matplotlib.pyplot as plt
+import numpy as np
+alpha_th=[-0.78,-0.04,0.2735,-0.027,0.56]
+x = np.array([r'$P_a$',r'$n_o$',r'$t_r$',r'$D_i$',r'$\sigma_u$'])
+x_position = np.arange(len(x))
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+ax.bar(x_position,alpha_th, width=0.4, label='FOSM')
+ax.bar(x_position + 0.4, alpha, width=0.4, label='SVM')
+ax.legend()
+ax.set_xticks(x_position + 0.2)
+ax.set_xticklabels(x)
+ax.set_ylabel(r'$\eta$')
+ax.set_xlabel('Parameter')
+#plt.savefig('alpha.eps')
+plt.show()
+        </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
