@@ -1,0 +1,146 @@
+<HTML>
+    <HEAD>
+        <TITLE>左</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>[参考文献]A.Haldar,S.Mahadevan,'Probability, Reliability and Statistical Methods in Engineering Design',P.217</p>
+        <p>$$
+            g=A_s*f_y*d*\left (1.0-\frac{\eta*A_s*f_y}{b*d*f_{cd}} \right )-M
+$$
+各変数の(平均値，COV)は，\(A_s\),\(f_y\),\(f_{cd}\),\(b\),\(d\),\(\eta\),\(M\)について，各々
+( 1.56,0.2),(47.7,0.15),(3.5,0.21)(8.0,0.1)(13.2,0.15)(0.59,0.05)(350.25,0.3)とする．
+このとき，\(P_f=0.01164213\) ,\(\beta=2.268738 \),
+\(D_P=(1.141779,41.67309,3.41036,7.954471,11.05959,0.5908335,476.9221 )\),
+\(\alpha=(0.5908361,0.3712793,0.05375613,0.02508489,0.476483 ,-0.01245341,-0.5313702 )\)である．
+上記評価はRStudioにて，MachineLearning\Reliability2にて評価</p>
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+from scipy.stats import norm 
+import math
+import numpy as np
+import pandas as pd
+from pandas import DataFrame, Series
+np.random.seed(20160614)
+from pyDOE import *
+def generate_datablock7k(n,MAs,SAs,Mfy,Sfy,Mfcd,Sfcd,Mb,Sb,Md,Sd,Meta,Seta,MM,SM,k):
+    #Latin Hypercube Sampling
+    design = lhs(7, samples=n,criterion='maximin')
+    u=design
+    means = [MAs,Mfy,Mfcd,Mb,Md,Meta,MM]
+    stdvs = [SAs,Sfy,Sfcd,Sb,Sd,Seta,SM]
+    for i in range(7):
+        u[:, i] = k*stdvs[i]*(2*design[:,i]-1)+means[i]
+    dAs=u[:,0]
+    dfy=u[:,1]
+    dfcd=u[:,2]
+    db=u[:,3]
+    dd=u[:,4]
+    deta=u[:,5]
+    dM=u[:,6]
+    df = DataFrame(dAs, columns=['x1'])
+    df['x2']=dfy
+    df['x3']=dfcd
+    df['x4']=db
+    df['x5']=dd
+    df['x6']=deta
+    df['x7']=dM
+    df['t']=0
+    df['t']=(np.sign(dAs*dfy*dd*(1-deta*dAs*dfy/db/dd/dfcd)-dM)+1)/2
+    return df
+def generate_datablock7(n,MAs,SAs,Mfy,Sfy,Mfcd,Sfcd,Mb,Sb,Md,Sd,Meta,Seta,MM,SM):
+    dAs=np.random.normal(MAs,SAs,n)
+    dfy=np.random.normal(Mfy,Sfy,n)
+    dfcd=np.random.normal(Mfcd,Sfcd,n)
+    db=np.random.normal(Mb,Sb,n)
+    dd=np.random.normal(Md,Sd,n)
+    deta=np.random.normal(Meta,Seta,n)
+    dM=np.random.normal(MM,SM,n)
+    df = DataFrame(dAs, columns=['x1'])
+    df['x2']=dfy
+    df['x3']=dfcd
+    df['x4']=db
+    df['x5']=dd
+    df['x6']=deta
+    df['x7']=dM
+    df['t']=0
+    df['t']=(np.sign(dAs*dfy*dd*(1-deta*dAs*dfy/db/dd/dfcd)-dM)+1)/2
+    return df
+
+n=200
+k=3
+#ratio=1.0
+MAs=1.56
+SAs=0.2*MAs
+Mfy=47.7
+Sfy=0.15*Mfy
+Mfcd=3.5
+Sfcd=0.21*Mfcd
+Mb=8.0
+Sb=0.1*Mb
+Md=13.2
+Sd=0.15*Md
+Meta=0.59
+Seta=0.05*Meta
+MM=350.25
+SM=0.3*MM
+train_set=generate_datablock7k(n,MAs,SAs,Mfy,Sfy,Mfcd,Sfcd,Mb,Sb,Md,Sd,Meta,Seta,MM,SM,k)
+train_x1 = train_set[['x1','x2','x3','x4','x5','x6','x7']].values
+train_t1 = train_set['t'].values.reshape([len(train_set), 1])
+from sklearn import preprocessing
+ax = train_set[['x1','x2','x3','x4','x5','x6','x7']].values
+v_mean=np.array([MAs,Mfy,Mfcd,Mb,Md,Meta,MM])
+v_std=np.array([SAs,Sfy,Sfcd,Sb,Sd,Seta,SM])
+X_std=(ax-v_mean)/v_std
+train_x=X_std
+var_num=train_x.shape[1]
+
+            ##########################  SVMによる解析  ######################################
+from RBM import reliability as rel
+C=10.0
+gamma=0.1
+from sklearn.svm import SVC
+svm=SVC(kernel='rbf',C=C,gamma=gamma,probability=True).fit(train_x,train_t1)
+sv=svm.support_vectors_
+sv_labels=svm.dual_coef_.ravel()>0
+dp,beta=rel.SV_RF(sv,svm,gamma)
+print('beta=',beta)
+Dp=dp*v_std+v_mean
+print('DP=',Dp)
+N_s=sum(train_t1)
+N_f=len(train_t1)-N_s
+print("Number of fuailure=",N_f)
+print("Number of safe points=",N_s)
+#p_vals=svm.predict_proba(np.array(dp).reshape(1,var_num))
+print('gval=',rel.g(np.array(dp),svm))
+alpha,deriv=rel.sv_alpha(svm,gamma,dp)
+print('alpha=',alpha)
+
+###################   感度値の描画  ####################
+import matplotlib.pyplot as plt
+import numpy as np
+alpha_th=[0.59,0.37,0.054,0.025,0.476,-0.0125,-0.5314]
+x = np.array([r'$A_s$',r'$f_y$',r'$f_{cd}$',r'$b$',r'$d$',r'$\eta$',r'$M$'])
+x_position = np.arange(len(x))
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+ax.bar(x_position,alpha_th, width=0.4, label='FOSM')
+ax.bar(x_position + 0.4, alpha, width=0.4, label='SVM')
+ax.legend()
+ax.set_xticks(x_position + 0.2)
+ax.set_xticklabels(x)
+ax.set_ylabel(r'$\eta$')
+ax.set_xlabel('Parameter')
+#plt.savefig('alpha.eps')
+plt.show()
+        </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
