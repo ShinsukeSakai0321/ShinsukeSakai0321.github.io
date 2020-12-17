@@ -1,0 +1,65 @@
+<HTML>
+    <HEAD>
+        <TITLE>左</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p><b>SVM</b>のdecision_functionをg分布と見立て，Lagrange未定乗数法によりDP探索,decision_functionを使って微分値を計算．RSモデルにおいてRとSに次の統計的性質を与える
+            \(M_R=150,S_R=20\),\(M_S=100,S_S=20\)  <br>          
+        この場合<br>           
+            \(\beta=1.767767\),\(P_f=0.03854994\)，\(D_P=(125 125)\),\(\alpha=(0.7071068,-0.7071068\))となる
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+from RBM import reliability as rel
+import numpy as np
+import pandas as pd
+from pandas import DataFrame, Series
+from scipy.stats import norm 
+# サンプル点の発生
+n=150
+Mr=150
+Sr=20
+Ms=100
+Ss=20
+k=3
+train_set=rel.generate_datablock3(n,Mr,Sr,Ms,Ss,k)
+train_t1 = train_set['t'].values
+Pf=1-sum(train_t1)/len(train_t1)
+N_s=sum(train_t1)
+N_f=len(train_t1)-N_s
+#train_set=UnderSampling(train_set,ratio)
+#標準化
+ax=train_set[['x1','x2']].values
+v_mean=np.array([Mr,Ms])
+v_std=np.array([Sr,Ss])
+X_std=(ax-v_mean)/v_std
+train_x=X_std
+var_num=train_x.shape[1]
+# SVMによる解析
+gamma=0.1
+from sklearn.svm import SVC
+svm=SVC(kernel='rbf',C=10,gamma=gamma,probability=True).fit(train_x,train_t1)
+sv=svm.support_vectors_
+dp,beta=rel.SV_RF(sv,svm,gamma)
+print('beta=',beta)
+Dp=dp*v_std+v_mean
+print('DP=',Dp)
+N_s=sum(train_t1)
+N_f=len(train_t1)-N_s
+print("Number of fuailure=",N_f)
+print("Number of safe points=",N_s)
+#p_vals=svm.predict_proba(np.array(dp).reshape(1,var_num))
+print('gval=',rel.g(np.array(dp),svm))
+alpha,deriv=rel.sv_alpha(svm,gamma,dp)
+print('Alpha=',alpha)
+        </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
