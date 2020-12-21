@@ -1,0 +1,125 @@
+<HTML>
+    <HEAD>
+        <TITLE>衝撃問題関連ユーティリティ</TITLE>
+    </HEAD>
+    <BODY BGCOLOR="#00FF00">    
+        <h1>衝撃問題関連ユーティリティ</h1>
+        <h2>概要</h2>
+        <p>
+            衝撃問題関連のユーティリティ機能をGitHub上からパッケージとして提供する．パッケージ名はUtility，モジュール名Impactである．
+        </p>
+        <h2>モジュールHLの利用法</h2>
+        <ol>
+            <li>ターミナルモードで以下のコマンドを入力し，パッケージUtilityをインストールする<br>
+                pip install git+https://github.com/ShinsukeSakai0321/Utility</li>
+            <li>プログラム内で以下のimport文でHloopモジュールを読み込む<br>
+                from Utility import Impact as impact</li>
+            <li>登録されているコマンドは以下のhelp文で確認できる<br>
+                help(impact)</li>
+        </ol>
+        <h2>登録されているコマンド</h2>
+        <table border="1">
+            <tr>
+                <th>コマンド</th><th>内容</th>
+            </tr>
+
+            <tr><td>BRL</td><td>BRL式による衝撃評価</td>
+            </tr>
+            <tr>
+                <td>JohnsonCook</td><td>Johnson Cook式の評価</td>
+            </tr>
+            <tr>
+                <td>WES</td><td>WES式による衝撃評価</td>
+            </tr>
+ 
+        </table>
+        
+        <h2>例題1</h2>
+        <p>登録されているコマンドの確認</p>
+        <FONT SIZE="4">
+        <pre>
+            from Utility import Impact as impact
+            help(impact)
+        </pre>
+        </FONT>
+
+        <h2>例題2</h2>
+        <p>BRL式の例題データに対する評価</p>
+        <FONT SIZE="4">
+        <pre>
+            im=impact.BRL()
+            M,K,D,V=im.exam1()
+            im.eval(M,V,D)
+        </pre>
+        </FONT>
+        この結果，以下の出力を確認する．
+        <FONT SIZE="4">
+        <pre>
+            0.006980883425430857
+        </pre>
+        </FONT>
+
+        <h2>例題3</h2>
+        <p>2024-T351 ALUMINUMの特定の塑性ひずみ，ひずみ速度時の真応力評価</p>
+        <FONT SIZE="4">
+        <pre>
+            jc=impact.JohnsonCook()
+            jc.Material('2024-T351 ALUMINUM')
+            ep=0.01
+            ep_d=0.2
+            T=273+15
+            s=jc.JC(ep,ep_d,T)
+            print(s)
+            jc.Reference()
+        </pre>
+        </FONT>
+        この結果，以下の出力を確認する．
+        <FONT SIZE="4">
+        <pre>
+            345.45780292674885
+            Out[3]:
+            "G.R.Johnson,W.H.Cook,'A Constitutive Medel And Data for Metals Subjected to Large Strains, High Strain Rates and Heigh Temeratures'"
+        </pre>
+        </FONT>
+
+        <h2>例題4</h2>
+        <p>降伏応力228MPa,引張強さ349MPa(実験時ひずみ速度1e-3)のひずみ速度1e-3,1e-2,1e-1時の引張強さ</p>
+        <FONT SIZE="4">
+        <pre>
+            m1=impact.WES(228,349,e0=1e-3)
+            ST=[m1.St(1e-3),m1.St(1e-2),m1.St(1e-1)]
+            print('St=:',ST)
+        </pre>
+        </FONT>
+        この結果，以下の出力を確認する．
+        <FONT SIZE="4">
+        <pre>
+            St=: [349.0, 362.3254085779881, 378.98919378599624]
+        </FONT>
+
+        <h2>例題5</h2>
+        <p>2024-T351 ALUMINUMの室温，ひずみ速度100における真応力真ひずみ曲線を描画</p>
+        <FONT SIZE="4">
+        <pre>
+            import matplotlib.pyplot as plt
+            import numpy as np
+            import math
+            e=np.arange(0.0,2.5,0.001)
+            jc=impact.JohnsonCook()
+            jc.Material('2024-T351 ALUMINUM')
+            e_d=100
+            T=273+15
+            s=jc.JC(e,e_d,T)
+            ax=plt.subplot()
+            ax.plot(e,s)
+            ax.set_ylim([0,1000])
+            ax.grid(which="both")
+            ax.set_xlabel("True Tensile Strain")
+            ax.set_ylabel("True Tensile Flow Stress[MPa]")
+            plt.show()
+        </FONT>
+        この結果，下図の描画を確認する．
+        <p><img src="a2024.png" alt="写真" width="432" height="288">2024-T351 ALUMINUMのひずみ速度100における真応力真ひずみ曲線 </p>
+        
+    </BODY>
+</HTML>
