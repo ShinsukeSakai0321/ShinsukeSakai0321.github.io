@@ -1,0 +1,68 @@
+<HTML>
+    <HEAD>
+        <TITLE>左</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>sklearnから提供される乳がん悪性細胞形状データを用い、細胞形状因子の悪性判定に及ぼす感度分析を行う</p>
+        <p>考え方としては、各形状因子を入力変数と考え、悪性=破損、良性=非破損と考え、SVM法による感度分析を実施する</p>
+
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+import pandas as pd
+###breast_cancerデータセットのインポート
+from sklearn.datasets import load_breast_cancer
+cancer = load_breast_cancer()
+
+###pandasのデータフレームに変換
+cancer_features_dataframe = pd.DataFrame(cancer.data,columns = cancer.feature_names)
+# 対象データの読み込み
+breast_cancer_df_tgt = pd.DataFrame(cancer.target, columns=['target'])
+# 特徴量スケーリング
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(cancer_features_dataframe)
+data_std=scaler.transform(cancer_features_dataframe)
+import numpy as np
+v_mean=scaler.mean_
+v_std=np.sqrt(scaler.var_)
+train_x=data_std
+var_num=train_x.shape[1]
+train_t1=breast_cancer_df_tgt['target'].values
+# failure -> 0, safe->1となるように変換
+train_t1=np.where(train_t1==0,1.0,0.0)
+from RBM import reliability as rel
+# SVMによる解析
+gamma=0.1
+C=10
+from sklearn.svm import SVC
+svm=SVC(kernel='rbf',C=C,gamma=gamma,probability=True).fit(train_x,train_t1)
+sv=svm.support_vectors_
+dp,beta=rel.SV_RF(sv,svm,gamma)
+print('beta=',beta)
+Dp=dp*v_std+v_mean
+print('DP=',Dp)
+N_s=sum(train_t1)
+N_f=len(train_t1)-N_s
+print("Number of fuailure=",N_f)
+print("Number of safe points=",N_s)
+#p_vals=svm.predict_proba(np.array(dp).reshape(1,var_num))
+print('gval=',rel.g(np.array(dp),svm))
+alpha,deriv=rel.sv_alpha(svm,gamma,dp)
+print('alpha=',alpha)
+#悪性乳がんへの影響因子
+name=cancer.feature_names
+factor_ind=np.argsort(alpha)
+for i in range(len(name)):
+    print(i+1,':',name[factor_ind[len(name)-i-1]])
+        </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
