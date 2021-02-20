@@ -1,0 +1,74 @@
+<HTML>
+    <HEAD>
+        <TITLE>左</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <A HREF="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/FN8RZK" TARGET="migi"><FONT SIZE="2"><B>Harvard Dataverse</B></A><BR>
+        <p>から提供される“COVID-19 Disruption on Travel Patterns data” 回答数1310,105質問,1064項目に対する感度分析。数値項目とカテゴリー項目を入力とし、COVID陽性、陰性をターゲットとしている。
+        </p>
+
+
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+from RBM import PreAnal as pAnal
+# アンケート結果の読み取り
+import pandas as pd
+df=pd.read_csv('Data to Share.csv')
+# インスタンスの生成
+pa=pAnal.PreAnal(df)
+# 数値項目とカテゴリー項目から入力DataFrame作成
+numeric_features = ['commute_miles','age']
+categorical_features = [ 'gender','race','current_job','essential_industry', 
+       'wfh_before_covid_opt','wfh_bc',
+        'instore_groc_bc','online_groc_bc','instore_other_bc','online_groc_bc',
+        'instore_other_bc','online_other_bc','restaurant_bc','online_food_bc',
+        'drive_alone_bc','carpool_bc','transit_bc','ferry_bc','solorh_taxi_bc',
+        'sharedrh_bc','bike_scooter_bc','shared_bike_scooter_bc','walk_bc',
+        'mode_work_school_bc','mode_groc_bc','mode_other_shop_bc','mode_errands_bc',
+        'mode_social_bc','wfh_dr','instore_groc_dr','online_groc_dr','instore_other_dr',
+        'online_other_dr','restaurant_dr','online_food_dr','drive_alone_dr','carpool_dr',
+        'transit_dr','ferry_dr','solorh_taxi_dr','sharedrh_dr','bike_scooter_dr',
+        'shared_bike_scooter_dr','walk_dr','mode_work_school_dr','mode_groc_dr',
+        'mode_other_shop_dr','mode_errands_dr','mode_social_dr','instore_groc_change',
+        'wfh_change_reason','work_hours_change_reason','work_mode_change_reason',
+        'online_groc_change_reason','instore_groc_change_reason','other_shop_change_reason',
+        'mode_nonwork_change_reason','work_hours_start_change','work_hours_stop_change',
+        'media_exag','face_cover_mandatory','business_shut_down','stay_home','physical_dist',
+        'ff_health','ff_stay_home','wfh_family','miss_commute','online_meeting','coworker_interact',
+        'social_interact','wfh_discipline','crowded_bus','transit_health','rideshare_stranger',
+        'avoid_share','save_money','transit_physical_distance','personal_space','online_shop_conv',
+        'physical_purchase','instore_groc_fun','online_groc_pref','store_enjoy','restaurant_fun',
+        'wfh_ac','instore_groc_ac','online_groc_ac','instore_other_ac','online_other_ac','restaurant_ac',
+        'online_food_ac','drive_alone_ac','carpool_ac','transit_ac','ferry_ac','solorh_taxi_ac','shareach_ac',
+        'bike_scooter_ac','shared_bike_scooter_ac','walk_ac','living_situation','hh_income','edu','living_space']
+X=pa.Xmake(numeric_features,categorical_features)
+# ターゲットの設定
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+# ターゲットは解析者が適宜設定すること
+categorical_transformer = OneHotEncoder(handle_unknown='ignore',sparse=False)
+cont=categorical_transformer.fit_transform(pd.DataFrame(df['COVID']))
+y=1-cont[:,4]  #陽性=0, other=1となるよう変換
+# 初回感度分析
+from RBM import SensitivityAnal as sAnal
+sa=sAnal.SensitivityAnal(X,y)
+res=sa.GetResult(pa)
+res
+# 感度の絶対値の閾値を設定した上で、再度感度分析
+thres=0.07
+next_features=sa.Next(thres,res)
+X1=X[next_features]
+sa=sAnal.SensitivityAnal(X1,y)
+res=sa.GetResult(pa)
+res
+        </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
