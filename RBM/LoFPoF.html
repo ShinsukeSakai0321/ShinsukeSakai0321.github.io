@@ -1,0 +1,39 @@
+<HTML>
+    <HEAD>
+        <TITLE>FrequencyとPoFの関係</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <style>
+            .margin{margin-right: 50px; margin-left: 50px;}
+            P { text-indent: 1em; }
+        </style>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <center><h1>決定木図の見方</h1></center>
+        <div class="margin">
+
+        <h2>はじめに</h2>
+        <p>リスクベースメンテナンスにおいて，リスクマトリックスの縦軸に用いられるのは通常は年間発生頻度(Frequency)が多く，確率値(PoF)が用いられることは少ないものと思われる．その意味では，縦軸はFrequency と表記すべきであるが，明確な区別をすることなくPoFが用いられる子もある．この区別を明確にしておかないと混乱を昌司かねない．そこで，統計的な整理を行っておくこととする．</p>
+       
+        <h2>年間発生頻度\(\lambda \)と発生回数の関係</h2>
+        <p>年間発生頻度を\(\lambda \)と表記することとする．\(\lambda \)は1に比較して非常に小さな数値であので，年間に\(n\)回発生する確率は次式のPoisson分布で表現できる．</p>
+        $$
+        P(n)=\frac{\lamnbda^n}{n!}exp(-\lambda)
+        $$
+        <p>一年間に一度も事象が発生しない確率は\(n=0\)を代入することにより，以下で与えられる．
+        </p>
+        $$
+        P(0)=\frac{\lambda^0}{0!}exp(-\lambda) \approx 1-\lambda
+        $$
+
+        <h2>\(\lambda\)とPoFの関係</h2>
+        <p>上式の関係から，年間に一回以上事象が発生する確率は</p>
+        $$
+        1-P(0) \approx \lambda
+        $$
+        <p>つまり，年間発生頻度\(\lambda\)とは，一年間に一回以上発生する確率に他ならない．その意味で，確率と表現することは間違いとは言えない．</p>
+
+        <h2>結論</h2>
+        frequencyと表記してもPoFと表記しても，どちらも誤りではない．ただし，PoFとは，年間に一回以上の破損が発生する確率であることを正しく理解する必要がある．
+    </div>
+    </BODY>
+</HTML>
