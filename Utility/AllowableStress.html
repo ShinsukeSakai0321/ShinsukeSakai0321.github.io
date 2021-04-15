@@ -12,14 +12,14 @@
         <div class="margin">
         <p>規格や標準において各種強度の許容応力値を設定するにあたり，強度実験で得られたサンプルデータに基づいて決定することが求められることがある。この場合，許容応力は目標とする信頼度や信頼水準を満足するように，サンプルサイズを加味した上で確率論的に決定する必要がでてくる。近年，許容応力を確率論的に決定することの必要性が高まっている。</p> 
         <h2>事前準備</h2>
-        <p>ターミナルモードで次のコマンドにより，パッケージをGitHubからインストールしておく。<br>
-            pip install git+https://github.com/ShinsukeSakai0321/Utility<br>
+        <p>ターミナルモードで次のコマンドにより，パッケージUtilityをGitHubからインストールしておく。<br>
+            <b>pip install git+https://github.com/ShinsukeSakai0321/Utility</b><br>
         次に，Pythonプログラム内で，パッケージUtilityの中のAllowableStressをインポートする。<br>
-        from Utility import AllowableStress as Astress<br>
+        <b>from Utility import AllowableStress as Astress</b><br>
         AllowableStress内のクラス，メソッドの詳細は下記コマンドで確認できる。<br>
-        help(AStress)<br>
+        <b>help(AStress)</b><br>
         この中のクラスPAStressが，許容応力管理のクラスである。まず，最初に，プログラム内でこのクラスのインスタンスを生成しておく。<br>
-        pas=Astress.PAStress()<br>
+        <b>pas=Astress.PAStress()</b><br>
           </p>
         <h2>\(\mu\),\(\sigma\)ともに既知の場合</h2>
         (例題1)引張強さの分布が\(N(400,30^2)\)の正規分布であるとき，\(P=0.01\)満足する許容応力\(S_a\)を決定する。
