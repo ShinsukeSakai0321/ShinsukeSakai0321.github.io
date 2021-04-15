@@ -11,6 +11,16 @@
         <center><h1>許容応力の確率論的決定法</h1></center>
         <div class="margin">
         <p>規格や標準において各種強度の許容応力値を設定するにあたり，強度実験で得られたサンプルデータに基づいて決定することが求められることがある。この場合，許容応力は目標とする信頼度や信頼水準を満足するように，サンプルサイズを加味した上で確率論的に決定する必要がでてくる。近年，許容応力を確率論的に決定することの必要性が高まっている。</p> 
+        <h2>事前準備</h2>
+        <p>ターミナルモードで次のコマンドにより，パッケージをGitHubからインストールしておく。<br>
+            pip install git+https://github.com/ShinsukeSakai0321/Utility<br>
+        次に，Pythonプログラム内で，パッケージUtilityの中のAllowableStressをインポートする。<br>
+        from Utility import AllowableStress as Astress<br>
+        AllowableStress内のクラス，メソッドの詳細は下記コマンドで確認できる。<br>
+        help(AStress)<br>
+        この中のクラスPAStressが，許容応力管理のクラスである。まず，最初に，プログラム内でこのクラスのインスタンスを生成しておく。<br>
+        pas=Astress.PAStress()<br>
+          </p>
         <h2>\(\mu\),\(\sigma\)ともに既知の場合</h2>
         (例題1)引張強さの分布が\(N(400,30^2)\)の正規分布であるとき，\(P=0.01\)満足する許容応力\(S_a\)を決定する。
         <hr width="500">
@@ -28,9 +38,52 @@
 
         <h2>\(\mu\)のみが未知の場合</h2>
         (例題2)引張強さの許容応力を決定するために，5本の強度実験を実施した。その結果\(\hat{\mu}\)=400MPaが得られた。信頼度90%，信頼水準95%を満足するための許容応力\(\hat{S_a}\)を求めよ。ただし，過去の経験から強度の標準偏差\(\sigma\)=20MPaが与えられているものとする。
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+            #例題2
+            pas.SetParam(param='n',val=5)
+            pas.SetParam(param='mu',val=400)
+            pas.SetParam(param='sigm',val=20)
+            pas.Bbasis2()
+            #359.6569505975057
+            </code>
+            </pre>
         <h2>\(\mu\),\(\sigma\)ともに未知の場合</h2>       
         (例題3)引張強さの許容応力を決定するために，5本の強度実験を実施した。その結果\(\hat{\mu}\)=400MPa，\(\hat{\sigma}\)=20MPaが得られた。信頼度90%，信頼水準95%を満足するための許容応力\(\hat{S_a}\)を求めよ。<br>
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+            #例題3
+            pas.SetParam(param='n',val=5)
+            pas.SetParam(param='mu',val=400)
+            pas.SetParam(param='sigm',val=20)
+            pas.Bbasis()
+            #331.867335129965
+            </code>
+            </pre>
         (例題4)5本の引張試験(サンプルサイズ\(n\)=5)の結果，引張強さ[408.4, 374.0, 395.9, 405.8, 412.3](単位:MPa)が得られた。この材料の\(\mu\),\(\sigma\)ともに未知であるとするとき，A許容値，B許容値を決定せよ。
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+            #例題4
+            data=[408.4, 374.0, 395.9, 405.8,412.3]
+            pas.SetData(data)
+            SaA=pas.Abasis()
+            SaB=pas.Bbasis()
+            SaA,SaB
+            #311.00403498262483 346.8989842383104
+            </code>
+            </pre>
     </div>
     </BODY>
 </HTML>
