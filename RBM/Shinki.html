@@ -1,0 +1,124 @@
+<HTML>
+    <HEAD>
+        <TITLE>学習->新規データへの適用</TITLE>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <h1>解説</h1>
+        <p>全プロントの統合データを用いた「学習->推論エンジン->新規データへの適用」の例題。データの最初の100行を新規データとして切り出し、それ以降を学習用データとすることとする。最後に、新規データに対して推論エンジンを適用し、制度検証を行う。</p>
+        <code>
+            [概要] 入出力ファイル覚書(入力ファイルはGetDataメソッドで提供)
+            AI_format_work.csv->df
+            df_new dfの最初の100行の切り出し(新規データと見立てる)
+            df_new_data.csv　　df_newのデータ部分を切り出したデータのファイルへの出力
+            df_new_DM1.csv　 df_newに対するDM1の損傷モードの正解のファイルへの出力
+            df_train dfの101行目以降(学習用データ)
+            data_train df_trainをDataTreatにより処理した結果。出力ファイルdata_train.csv
+            df_trainにより'DM1'について学習
+            　その結果はDM1.clfに出力される
+            
+            ++++++++++++++++++++++++++++++++++++++++++++++++++++
+            入力
+            AI_format_work.csv
+            rename_term.csv rename_damage.csv　　　　
+            出力(DataTreat後)
+            data_train.csv
+            t_data.csv
+            出力(決定木解析後)
+            DM1.clf
+            +++++++ 新規データ処理時の作業　+++++++++++++++++++++
+            入力
+            df_new_data.csv
+            rename_term.csv
+            t_data.csv
+            出力
+            data_new.csv
+            +++++++ 作業の確認 +++++++++++++++++
+            DM1.clfにより、data_new.csvに対する予測を行い、
+            df_new_DM1.csvとの比較検証を行う
+            +++++++++++++++++++++++++++++++++++++++++++++++++++++    
+        </code>
+
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+            ###########  データ加工処理 #############
+            from RBM import DataTreat as dt
+            import warnings
+            warnings.filterwarnings('ignore')
+            import pandas as pd
+            import numpy as np
+            #関連データの取得
+            df,rename_term,rename_damage=dt.GetData()
+            #df=pd.read_csv('AI_format_work.csv')
+            #dfの最初のnum行の切り出し(新規データと見立てる)
+            num=100
+            df_new=df.head(num)
+            #dfの11行目以降(学習用データ)
+            df_train=df[num:]
+            ii=0
+            # rename_damageを使ってDM**を削除
+            rename_damage=pd.read_csv('rename_damage.csv',header=None,dtype=str)
+            rename_term=pd.read_csv('rename_term.csv',header=None,dtype=str)
+            dm=rename_damage[0]
+            df_new[[dm.iloc[ii]]].to_csv('df_new_'+dm.iloc[ii]+'.csv')
+            for i in range(len(dm)):
+                df_new=df_new.drop(dm[i],axis=1)
+            df_new.to_csv('df_new_data.csv')
+            #DataTreat処理
+            # インスタンス生成
+            dtoData=dt.DataTreatN(df_train,rename_term,rename_damage,type='AI_new')
+            # データ加工
+            data,t_data,damage=dtoData.DataTreat()
+            dam_data,damage_name=dtoData.DamageTake(damage)
+            t_data.to_csv('t_data.csv')
+            #############   決定木解析   ###################
+            from sklearn.model_selection import train_test_split
+            max_depth=3
+            from sklearn import tree
+            max_depth=int(max_depth)
+            dtree = tree.DecisionTreeClassifier(max_depth=max_depth)
+            ii=0
+            damData=damage[dam_data[ii]]
+            target=pd.DataFrame(np.array(damData),columns=[dam_data[ii]])
+            nd=target[dam_data[ii]].value_counts()[1] #登録されている損傷数
+            print('*****   Damage mode:{}   *****'.format(damage_name[ii]))
+            try:
+                X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=100,stratify=target)
+                dtree = dtree.fit(X_train, y_train)
+                print('登録されている損傷数 {}'.format(nd))
+                print('Accuracy on training set:{:.2f}'.format(dtree.score(X_train,y_train)))
+                print('Accuracy on test set:{:.2f}'.format(dtree.score(X_test,y_test)))
+            except Exception:
+                print('[ERROR]登録されている損傷数 {} は少な過ぎます'.format(nd))  #例外処理
+            ######### データの保存  ############
+            import joblib
+            t_data.to_csv('t_data.csv')
+            data.to_csv('data_train.csv')
+            # 学習結果を保存
+            i=0
+            joblib.dump(dtree, dam_data[i]+'.clf')
+            ########### 新規データに対するデータ加工 ###########
+            import pandas as pd
+            df_new=pd.read_csv('df_new_data.csv',index_col=0)#新規データ
+            t_data=pd.read_csv('t_data.csv', index_col=0)
+            rename_term=pd.read_csv('rename_term.csv',header=None,dtype=str)
+            rename_damage=pd.read_csv('rename_damage.csv',header=None,dtype=str)
+            data=pd.read_csv('data_train.csv',index_col=0)
+            colData=data.columns
+            dtn=dt.DataTreatNew(df_new,rename_term,t_data,colData)
+            dtn.DataConvert()
+            data_new=dtn.GetConvertedData()
+            ############  学習モデルの読み込み  ############
+            import joblib
+            clf=joblib.load('DM1.clf') 
+            ######## 学習モデルへの適用による精度検証  #######
+            df_new_DM1=pd.read_csv('df_new_DM1.csv',index_col=0)#損傷評価データ
+            clf.score(data_new,df_new_DM1)
+    </code>
+        </pre>
+    </FONT>
+    </BODY>
+</HTML>
