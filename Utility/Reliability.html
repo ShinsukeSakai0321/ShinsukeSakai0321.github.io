@@ -1,0 +1,172 @@
+<HTML>
+    <HEAD>
+        <TITLE>信頼性評価関連ユーティリティ</TITLE>
+    </HEAD>
+    <BODY BGCOLOR="#00FF00">    
+        <h1>信頼性評価関連ユーティリティ</h1>
+        <h2>概要</h2>
+        <p>
+            信頼性評価における限界状態関数法をサポートするためのユーティリティ機能をGitHub上からパッケージとして提供する．パッケージ名はUtility，モジュール名LimitStateである．
+        </p>
+        <h2>モジュールLimitStateの利用法</h2>
+        <ol>
+            <li>ターミナルモードで以下のコマンドを入力し，パッケージUtilityをインストールする<br>
+                pip install git+https://github.com/ShinsukeSakai0321/Utility</li>
+            <li>プログラム内で以下のimport文でLimitStateモジュールを読み込む<br>
+                from Utility import LimitState as ls</li>
+            <li>登録されているコマンドは以下のhelp文で確認できる<br>
+                help(impact)</li>
+        </ol>
+        <h2>登録されているコマンド</h2>
+        <p>以下には、外部から利用される可能性のあるコマンドのみ抽出して説明する。全ての登録コマンドを確認するためには、help(ls)を入力して確認すること。</p>
+        <table border="1">
+            <tr>
+                <th>コマンド</th><th>内容</th>
+            </tr>
+
+            <tr><td>LSFM</td><td>信頼性解析管理のための基底クラス</td>
+            </tr>
+            <tr>
+                <td>Lbase</td><td>限界状態関数定義のための基底クラス</td>
+            </tr>
+            <tr>
+                <td>MetalLoss</td><td>API法による局部減肉信頼性評価のための管理クラス</td>
+            </tr>
+ 
+        </table>
+        
+        <h2>例題1</h2>
+        <p>登録されているコマンドの確認</p>
+        <FONT SIZE="4">
+        <pre>
+            from Utility import LimitState as ls
+            help(ls)
+        </pre>
+        </FONT>
+
+        <h2>例題2</h2>
+        <p>局部減肉評価</p>
+        <FONT SIZE="4">
+        <pre>
+            n=8
+            Mu=[0.1,1.08,13,0.2,2400,469,1000,8]
+            cov=[0.5,0.1,1e-6,1e-6,1e-6,0.06,1e-6,0.01]
+            sigmmaX = [x * y for (x, y) in zip(Mu, cov)]
+            dist =["gumbel", "gumbel", "normal", "normal" ,"normal" ,"normal" ,"normal" ,"normal"]
+            ttime=8
+            metal=ls.MetalLoss(n,Mu,sigmmaX,dist,ttime)
+            metal.calc()
+            metal.GetBeta()
+            #
+        </pre>
+        </FONT>
+        この結果，以下の出力を確認する．
+        <FONT SIZE="4">
+        <pre>
+            5.055623457624247
+        </pre>
+        </FONT>
+
+        <h2>例題3</h2>
+        <p>限界状態関数管理クラスと、信頼性管理クラスを定義した上で使う例題。ここでは、各クラス名をGRS,RSとしている。</p>
+        <FONT SIZE="4">
+        <pre>
+            # RSモデル
+            # 限界状態関数クラスを新規に定義して利用する場合
+            class GRS(ls.Lbase):
+                def __init__(self,n):
+                    self.n=n
+                    super().__init__(self.n)
+                def gcalc(self):
+                    X=super().GetX()
+                    R=X[0]
+                    S=X[1]
+                    g=R-S
+                    super().SetG(g)
+                def dGdXcalc(self):
+                    X=super().GetX()
+                    dGdX=super().GetdGdX()
+                    R=X[0]
+                    S=X[1]
+                    dGdX[0] =1.0
+                    dGdX[1] =-1.0
+                    super().SetdGdX(dGdX)
+            class RS(ls.LSFM):
+                def __init__(self,n,Mu,sigmmaX,dist):
+                    self.n=n
+                    gg=GRS(self.n)
+                    super().DefineG(gg)
+                    super().__init__(n,Mu,sigmmaX,dist)
+                def calc(self):
+                    super().RF()
+            dist=['normal','normal']
+            muX=[200,100]
+            sigmmaX=[10,20]
+            n=2
+            rs=RS(n,muX,sigmmaX,dist)
+            rs.calc()
+            rs.GetBeta()
+        </pre>
+        </FONT>
+        この結果，信頼性指標の出力値として以下の出力を確認する．
+        <FONT SIZE="4">
+        <pre>
+            4.47213595499958
+        </pre>
+        </FONT>
+
+        <h2>例題4</h2>
+        <p>限界状態関数や変数を文字列で定義し，平均値，標準偏差を指定する場合．最も簡単な利用法．</p>
+        <FONT SIZE="4">
+        <pre>
+            aa=ls.reliability(g='r-s',var=['r','s'],dist=['normal','normal'],muX=[200,100],sigmmaX=[10,20])
+            aa.calc()
+            aa.GetBeta()
+        </pre>
+        </FONT>
+        この結果，以下の出力を確認する．
+        <FONT SIZE="4">
+        <pre>
+            4.47213595499958
+            なお，上記例題のreliability関数入力パラメータはデフォールト値として設定されているものなので，以下と書いても同じ結果となる．動作確認に利用するとよい．
+
+            aa=ls.reliability()
+            aa.calc()
+            aa.GetBeta()
+
+        </pre>
+        </FONT>
+
+        <h2>例題5</h2>
+        <p>下記文献の検証
+            "Probability, Reliability and Statistical Methods in　Engineering Design"
+            Achintya Haldar  & Sankaran Mahadevan
+            P.218 Table 7.5, 7.6</p>
+        <FONT SIZE="4">
+        <pre>
+            #　限界状態関数を文字列で与えて利用する場合
+            import numpy as np
+            g="As*fy*d*(1.0-eta*As*fy/b/d/fcd)-M"
+            var =["As","fy","fcd","b","d","eta","M"]
+            muX =[1.56, 47.7, 3.5, 8.0, 13.2, 0.59, 326.25]
+            covX =[0.036, 0.15, 0.21, 0.045, 0.086, 0.05, 0.17]
+            sigmmaX = list(np.array(covX)*np.array(muX))
+            dist =["normal", "normal", "normal", "normal" ,"normal" ,"normal" ,"normal" ]
+            aa =ls.reliability(g=g,var=var,dist=dist,muX=muX,sigmmaX=sigmmaX)
+            a1=aa.GetBeta()
+            dist[6]="lognormal"
+            aa =ls.reliability(g=g,var=var,dist=dist,muX=muX,sigmmaX=sigmmaX)
+            a2=aa.GetBeta()
+            dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"normal"]
+            aa =ls.reliability(g=g,var=var,dist=dist,muX=muX,sigmmaX=sigmmaX)
+            a3=aa.GetBeta()
+            dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"lognormal"]
+            aa =ls.reliability(g=g,var=var,dist=dist,muX=muX,sigmmaX=sigmmaX)
+            a4=aa.GetBeta()
+            [a1,a2,a3,a4]
+        </FONT>
+        この結果，以下の出力を確認する．
+        <p>[3.8330281658128675, 3.7612536656241864, 4.3876843910772845, 4.090647398473586]</p>
+        
+    </BODY>
+</HTML>
