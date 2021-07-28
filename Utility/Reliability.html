@@ -53,7 +53,10 @@
         <h2>例題2</h2>
         <p>局部減肉評価</p>
         <FONT SIZE="4">
-        <pre>
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+    <pre>
             n=8
             Mu=[0.1,1.08,13,0.2,2400,469,1000,8]
             cov=[0.5,0.1,1e-6,1e-6,1e-6,0.06,1e-6,0.01]
@@ -82,6 +85,9 @@
         <p>限界状態関数管理クラスと、信頼性管理クラスを定義した上で使う例題。最も基本となるRSモデルの例題．<br>
             ここでは、各クラス名をGRS,RSとしている。</p>
         <FONT SIZE="4">
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
         <pre>
             # RSモデル
             # 限界状態関数クラスを新規に定義して利用する場合
@@ -130,6 +136,9 @@
         <h2>例題4</h2>
         <p>限界状態関数や変数を文字列で定義し，平均値，標準偏差を指定する場合．最も簡単な利用法．</p>
         <FONT SIZE="4">
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
         <pre>
             aa=ls.reliability(g='r-s',var=['r','s'],dist=['normal','normal'],muX=[200,100],sigmmaX=[10,20])
             aa.calc()
@@ -156,6 +165,9 @@
             Achintya Haldar  & Sankaran Mahadevan<br>
             P.218 Table 7.5, 7.6</p>
         <FONT SIZE="4">
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
         <pre>
             #　限界状態関数を文字列で与えて利用する場合
             import numpy as np
@@ -177,9 +189,99 @@
             aa =ls.reliability(g=g,var=var,dist=dist,muX=muX,sigmmaX=sigmmaX)
             a4=aa.GetBeta()
             [a1,a2,a3,a4]
+        </pre>
         </FONT>
         この結果，以下の信頼性指標の出力を確認する．
         <p>[3.8330281658128675, 3.7612536656241864, 4.3876843910772845, 4.090647398473586]</p>
+
+        <h2>例題6</h2>
+        <p>例題5と同じ問題について直接限界状態関数を定義して利用する方法。PYTHONの数式処理機能を利用すると便利。例題5よりは、処理速度が早くなる。</p>
+        <FONT SIZE="4">
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <pre>
+            from sympy import *
+            import numpy as np
+            class Gmulti(ls.Lbase):
+                def __init__(self,n):
+                    self.n=n
+                    super().__init__(self.n)
+                    As,fy,fcd,b,d,eta,M = symbols('As fy fcd b d eta M')
+                    g=As*fy*d*(1.0-eta*As*fy/b/d/fcd)-M
+                    #あらかじめ微分の文字列を数式処理で作っておく
+                    self.gg=str(g)
+                    self.d0=str(diff(g,As))
+                    self.d1=str(diff(g,fy))
+                    self.d2=str(diff(g,fcd))
+                    self.d3=str(diff(g,b))
+                    self.d4=str(diff(g,d))
+                    self.d5=str(diff(g,eta))
+                    self.d6=str(diff(g,M))
+                def gcalc(self):
+                    X=super().GetX()
+                    As=X[0]
+                    fy=X[1]
+                    fcd=X[2]
+                    b=X[3]
+                    d=X[4]
+                    eta=X[5]
+                    M=X[6]
+                    g=eval(self.gg)
+                    super().SetG(g)
+                def dGdXcalc(self):
+                    X=super().GetX()
+                    As=X[0]
+                    fy=X[1]
+                    fcd=X[2]
+                    b=X[3]
+                    d=X[4]
+                    eta=X[5]
+                    M=X[6]
+                    dGdX=super().GetdGdX()
+                    #微分値の評価
+                    dGdX[0]=eval(self.d0)
+                    dGdX[1]=eval(self.d1)
+                    dGdX[2]=eval(self.d2)
+                    dGdX[3]=eval(self.d3)
+                    dGdX[4]=eval(self.d4)
+                    dGdX[5]=eval(self.d5)
+                    dGdX[6]=eval(self.d6)
+                    super().SetdGdX(dGdX)
+            class multi(ls.LSFM):
+                def __init__(self,n,Mu,sigmmaX,dist):
+                    self.n=n
+                    gg=Gmulti(self.n)
+                    super().DefineG(gg)
+                    super().__init__(n,Mu,sigmmaX,dist)
+                def calc(self):
+                    super().RF()
+            dist =["normal", "normal", "normal", "normal" ,"normal" ,"normal" ,"normal" ]
+            muX =[1.56, 47.7, 3.5, 8.0, 13.2, 0.59, 326.25]
+            covX =[0.036, 0.15, 0.21, 0.045, 0.086, 0.05, 0.17]
+            sigmmaX = list(np.array(covX)*np.array(muX))
+            n=7
+            rs=multi(n,muX,sigmmaX,dist)
+            rs.calc()
+            a1=rs.GetBeta()
+            dist[6]="lognormal"
+            rs=multi(n,muX,sigmmaX,dist)
+            rs.calc()
+            a2=rs.GetBeta()
+            dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"normal"]
+            rs=multi(n,muX,sigmmaX,dist)
+            rs.calc()
+            a3=rs.GetBeta()
+            dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"lognormal"]
+            rs=multi(n,muX,sigmmaX,dist)
+            rs.calc()
+            a4=rs.GetBeta()
+            [a1,a2,a3,a4] 
+        </pre>
+    </FONT>
+    この結果，以下の信頼性指標の出力を確認する．
+    <p>[3.8330281658128675, 3.7612536656241864, 4.3876843910772845, 4.090647398473586]</p>
+
     </div>   
     </BODY>
 </HTML>
