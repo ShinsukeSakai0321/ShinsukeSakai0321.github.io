@@ -95,30 +95,30 @@
             # RSモデル
             # 限界状態関数クラスを新規に定義して利用する場合
             class GRS(ls.Lbase):
-            def __init__(self,n):
-                self.n=n
-                super().__init__(self.n)
-            def gcalc(self):
-                X=super().GetX()
-                R=X[0]
-                S=X[1]
-                g=R-S
-                super().SetG(g)
-            def dGdXcalc(self):
-                X=super().GetX()
-                dGdX=super().GetdGdX()
-                R=X[0]
-                S=X[1]
-                dGdX[0] =1.0
-                dGdX[1] =-1.0
-                super().SetdGdX(dGdX)
-        dist=['normal','normal']
-        muX=[200,100]
-        sigmmaX=[10,20]
-        n=2
-        rs=ls.Gmanage(n,muX,sigmmaX,dist,GRS)
-        rs.RF()
-        rs.GetBeta()
+                def __init__(self,n):
+                    self.n=n
+                    super().__init__(self.n)
+                def gcalc(self):
+                    X=super().GetX()
+                    R=X[0]
+                    S=X[1]
+                    g=R-S
+                    super().SetG(g)
+                def dGdXcalc(self):
+                    X=super().GetX()
+                    dGdX=super().GetdGdX()
+                    R=X[0]
+                    S=X[1]
+                    dGdX[0] =1.0
+                    dGdX[1] =-1.0
+                    super().SetdGdX(dGdX)
+            dist=['normal','normal']
+            muX=[200,100]
+            sigmmaX=[10,20]
+            n=2
+            rs=ls.Gmanage(n,muX,sigmmaX,dist,GRS)
+            rs.RF()
+            rs.GetBeta()
         </pre>
         </FONT>
         この結果，信頼性指標の出力値として以下の出力を確認する．
