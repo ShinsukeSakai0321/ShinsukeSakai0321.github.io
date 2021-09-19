@@ -17,7 +17,10 @@
         <h2>モジュールLimitStateの利用法</h2>
         <ol>
             <li>ターミナルモードで以下のコマンドを入力し，パッケージUtilityをインストールする<br>
-                pip install git+https://github.com/ShinsukeSakai0321/Utility</li>
+                pip install git+https://github.com/ShinsukeSakai0321/Utility<br>
+            ただし、更新の場合には<br>
+                pip install --upgrade git+https://github.com/ShinsukeSakai0321/Utility            
+                </li>
             <li>プログラム内で以下のimport文でLimitStateモジュールを読み込む<br>
                 from Utility import LimitState as ls</li>
             <li>登録されているコマンドは以下のhelp文で確認できる<br>
@@ -92,38 +95,30 @@
             # RSモデル
             # 限界状態関数クラスを新規に定義して利用する場合
             class GRS(ls.Lbase):
-                def __init__(self,n):
-                    self.n=n
-                    super().__init__(self.n)
-                def gcalc(self):
-                    X=super().GetX()
-                    R=X[0]
-                    S=X[1]
-                    g=R-S
-                    super().SetG(g)
-                def dGdXcalc(self):
-                    X=super().GetX()
-                    dGdX=super().GetdGdX()
-                    R=X[0]
-                    S=X[1]
-                    dGdX[0] =1.0
-                    dGdX[1] =-1.0
-                    super().SetdGdX(dGdX)
-            class RS(ls.LSFM):
-                def __init__(self,n,Mu,sigmmaX,dist):
-                    self.n=n
-                    gg=GRS(self.n)
-                    super().DefineG(gg)
-                    super().__init__(n,Mu,sigmmaX,dist)
-                def calc(self):
-                    super().RF()
-            dist=['normal','normal']
-            muX=[200,100]
-            sigmmaX=[10,20]
-            n=2
-            rs=RS(n,muX,sigmmaX,dist)
-            rs.calc()
-            rs.GetBeta()
+            def __init__(self,n):
+                self.n=n
+                super().__init__(self.n)
+            def gcalc(self):
+                X=super().GetX()
+                R=X[0]
+                S=X[1]
+                g=R-S
+                super().SetG(g)
+            def dGdXcalc(self):
+                X=super().GetX()
+                dGdX=super().GetdGdX()
+                R=X[0]
+                S=X[1]
+                dGdX[0] =1.0
+                dGdX[1] =-1.0
+                super().SetdGdX(dGdX)
+        dist=['normal','normal']
+        muX=[200,100]
+        sigmmaX=[10,20]
+        n=2
+        rs=ls.Gmanage(n,muX,sigmmaX,dist,GRS)
+        rs.RF()
+        rs.GetBeta()
         </pre>
         </FONT>
         この結果，信頼性指標の出力値として以下の出力を確認する．
@@ -253,33 +248,25 @@
                     dGdX[5]=eval(self.d5)
                     dGdX[6]=eval(self.d6)
                     super().SetdGdX(dGdX)
-            class multi(ls.LSFM):
-                def __init__(self,n,Mu,sigmmaX,dist):
-                    self.n=n
-                    gg=Gmulti(self.n)
-                    super().DefineG(gg)
-                    super().__init__(n,Mu,sigmmaX,dist)
-                def calc(self):
-                    super().RF()
             dist =["normal", "normal", "normal", "normal" ,"normal" ,"normal" ,"normal" ]
             muX =[1.56, 47.7, 3.5, 8.0, 13.2, 0.59, 326.25]
             covX =[0.036, 0.15, 0.21, 0.045, 0.086, 0.05, 0.17]
             sigmmaX = list(np.array(covX)*np.array(muX))
             n=7
-            rs=multi(n,muX,sigmmaX,dist)
-            rs.calc()
+            rs=ls.Gmanage(n,muX,sigmmaX,dist,Gmulti)
+            rs.RF()
             a1=rs.GetBeta()
             dist[6]="lognormal"
-            rs=multi(n,muX,sigmmaX,dist)
-            rs.calc()
+            rs=ls.Gmanage(n,muX,sigmmaX,dist,Gmulti)
+            rs.RF()
             a2=rs.GetBeta()
             dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"normal"]
-            rs=multi(n,muX,sigmmaX,dist)
-            rs.calc()
+            rs=ls.Gmanage(n,muX,sigmmaX,dist,Gmulti)
+            rs.RF()
             a3=rs.GetBeta()
             dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"lognormal"]
-            rs=multi(n,muX,sigmmaX,dist)
-            rs.calc()
+            rs=ls.Gmanage(n,muX,sigmmaX,dist,Gmulti)
+            rs.RF()
             a4=rs.GetBeta()
             [a1,a2,a3,a4] 
         </pre>
