@@ -270,13 +270,60 @@
             a4=rs.GetBeta()
             [a1,a2,a3,a4] 
         </pre>
-    </FONT>
-    <FONT SIZE="4">
-        <pre>
-        この結果，以下の信頼性指標の出力を確認する．
-        <p>[3.8330281658128675, 3.7612536656241864, 4.3876843910772845, 4.090647398473586]</p>
-        </pre>
         </FONT>
+        <FONT SIZE="4">
+            <pre>
+            この結果，以下の信頼性指標の出力を確認する．
+            <p>[3.8330281658128675, 3.7612536656241864, 4.3876843910772845, 4.090647398473586]</p>
+            </pre>
+            </FONT>
+        <h2>例題6</h2>
+        <p>例題3と同じ問題について限界状態関数のみを表現するクラスを記述して信頼性評価を行う。</p>
+        <FONT SIZE="4">
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <pre>
+            from Utility import LimitState as ls
+            from sympy import *
+            class GRS(ls.RelBase):
+                def __init__(self):
+                    self.variable=['r','s']#限界状態関数内の変数
+                    self.title='RS model'#課題のタイトル
+                class G(ls.Lbase):#限界状態関数クラス名、Gでなければならない
+                    def __init__(self,n):
+                        self.n=n
+                        super().__init__(self.n)
+                        r,s=symbols('r s')
+                        g=r-s
+                        self.gg=str(g)
+                        self.d0=str(diff(g,r))
+                        self.d1=str(diff(g,s))
+                    def gcalc(self):#G値の計算
+                        X=super().GetX()
+                        r=X[0]
+                        s=X[1]
+                        g=eval(self.gg)
+                        super().SetG(g)
+                    def dGdXcalc(self):#微分値の計算
+                        X=super().GetX()
+                        dGdX=super().GetdGdX()
+                        r=X[0]
+                        s=X[1]
+                        dGdX[0] =eval(self.d0)
+                        dGdX[1] =eval(self.d1)
+                        super().SetdGdX(dGdX)
+            # main program #
+            #入力データは辞書形式で表現
+            data={"r":{"mean":200,"cov":0.05,"dist":"normal"},#辞書形式で与える入力データ
+            "s":{"mean":100,"cov":0.2,"dist":"normal"}            }
+            rs=GRS()
+            print('val=',rs.Geval(data))#dataに対する限界状態関数値
+            rs.Reliability(data)#dataに対する信頼性評価
+            print('beta=',rs.GetBeta())#信頼性指標の取得
+            print('alpha=',rs.GetAlpha())#感度の取得
+            print('POF=',rs.GetPOF())#破損確率の取得            
+    </pre>
     </div>   
     </BODY>
 </HTML>
