@@ -1,0 +1,23 @@
+<HTML>
+    <HEAD>
+        <TITLE>ヒステリシスループ法とレインフロー法の関係</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <style>
+            .margin{margin-right: 50px; margin-left: 50px;}
+            P { text-indent: 1em; }
+        </style>
+    </HEAD>
+    <BODY BGCOLOR="#90EE90">    
+        <center><h1>ヒステリシスループ法とレインフロー法の関係</h1></center>
+        <div class="margin">
+        <p>
+            レインフロー法と実質同等な評価結果を与えるヒステリシスループ波形計数法が文献[1]に記載されています。ここに記載されているヒステリシスループ法のアルゴリズムは、実質レインフロー法の評価結果と同じ結果を与えますが、厳密に見ると少しだけ異なっていました。しかし、ヒステリシスループ法のアルゴリズムを一か所変更するだけで、完全にレインフロー法と合致することを最近見出しました。ここで、提供するアルゴリズムは完全にレインフロー法に合致するはずです。<br>
+            下図の赤線部で変更点を示します。
+            <p><img src="flowchart.png"> <br>
+                これにて、完全にレインフロー法と一致すると考えていますが、不都合がありましたらメール連絡下さい。なお、当サイトから提供する波形計数システムのうち、この対応を行っているのは、Python版のみです。Windows版とR版は修正していませんので、注意して下さい。(2021.9.23)
+        </p>
+        <h2>参考文献</h2>
+        [1]岡村弘之，板垣　浩著「強度の統計的取り扱い」，培風館， 4.3疲労の安全寿命
+        </div>
+    </BODY>
+</HTML>
