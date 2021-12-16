@@ -10,7 +10,7 @@
     <BODY TEXT="black" BGCOLOR="#90EE90">
         <center><h1>許容応力の確率論的決定法</h1></center>
         <div class="margin">
-        <p>規格や標準において各種強度の許容応力値を設定するにあたり，強度実験で得られたサンプルデータに基づいて決定することが求められることがある。この場合，許容応力は目標とする信頼度や信頼水準を満足するように，サンプルサイズを加味した上で確率論的に決定する必要がでてくる。近年，許容応力を確率論的に決定することの必要性が高まっている。確率論的評価に資するためのパッケージを提供する。なお，確率分布は正規分布であるものとしている。</p> 
+        <p>規格や標準において各種強度の許容応力値を設定するにあたり，強度実験で得られたサンプルデータに基づいて決定することが求められることがある。この場合，許容応力は目標とする信頼度や信頼水準を満足するように，サンプルサイズを加味した上で確率論的に決定する必要がでてくる。近年，許容応力を確率論的に決定することの必要性が高まっている。確率論的評価に資するためのパッケージを提供する。なお，確率分布は正規分布であるものとしている。ただし，対数正規分布の場合にも，応用できるので，最後にその利用法を示している。</p> 
         <h2>事前準備</h2>
         <p>ターミナルモードで次のコマンドにより，パッケージUtilityをGitHubからインストールしておく。<br>
             <b>pip install git+https://github.com/ShinsukeSakai0321/Utility</b><br>
@@ -21,6 +21,10 @@
         この中のクラスPAStressが，許容応力管理のクラスである。まず，最初に，プログラム内でこのクラスのインスタンスを生成しておく。<br>
         <b>pas=Astress.PAStress()</b><br>
           </p>
+
+
+          <hr size="10">
+          <center><h2>--- 正規分布 ---</h2></center>
         <h2>\(\mu\),\(\sigma\)ともに既知の場合</h2>
         (例題1)引張強さの分布が\(N(400,30^2)\)の正規分布であるとき，\(P=0.01\)満足する許容応力\(S_a\)を決定する。
         <hr width="500">
@@ -84,6 +88,72 @@
             #311.00403498262483 346.8989842383104
             </code>
             </pre>
-    </div>
+
+
+    <hr size="10">
+    <center><h2>--- 対数正規分布 ---</h2></center> 
+    母集団の強度\(S) が対数正規分布に従い、\(logS)の平均値を\(\mu_L\)、標準偏差を\(\sigma_L\)とする。まず、対数正規分布に従うサンプルデータ10点を下記により発生する。\(\mu\)のみが未知の場合と、\(\mu\),\(\sigma\)ともに未知の場合について、A許容値、B許容値の評価プログラムを示す。
+    <hr width="500">
+    <center>プログラムリスト</center>
+    <hr width="500">
+    <FONT SIZE="4">
+    <pre>
+    <code>
+        import numpy as np
+        sigm=np.log(1.1)
+        mu=np.log(400)
+        n=10
+        s=np.random.lognormal(mu,sigm,n)
+        slog=np.log(s)
+            </code>
+        </pre>
+    
+    <h2>\(\mu\)のみが未知の場合</h2>
+    <hr width="500">
+    <center>プログラムリスト</center>
+    <hr width="500">
+    <FONT SIZE="4">
+    <pre>
+    <code>
+        from Utility import AllowableStress as Astress
+        pas=Astress.PAStress()
+        mu=slog.mean()
+        pas.SetParam(param='n',val=10)
+        pas.SetParam(param='mu',val=mu)
+        pas.SetParam(param='sigm',val=sigm)
+        Abasis=np.exp(pas.Abasis2())
+        Bbasis=np.exp(pas.Bbasis2())
+        print('Absis=',Abasis,':Bbasis=',Bbasis)
+        #Absis= 291.2633407447084 :Bbasis= 321.76051705594955
+        </code>
+        </pre>
+
+
+
+
+
+
+
+    <h2>\(\mu\),\(\sigma\)ともに未知の場合</h2>       
+    <hr width="500">
+    <center>プログラムリスト</center>
+    <hr width="500">
+    <FONT SIZE="4">
+    <pre>
+    <code>
+        from Utility import AllowableStress as Astress
+        pas=Astress.PAStress()
+        sigm=slog.std()
+        mu=slog.mean()
+        pas.SetParam(param='n',val=10)
+        pas.SetParam(param='mu',val=mu)
+        pas.SetParam(param='sigm',val=sigm)
+        Abasis=np.exp(pas.Abasis())
+        Bbasis=np.exp(pas.Bbasis())
+        print('Absis=',Abasis,':Bbasis=',Bbasis)
+        # Absis= 246.67391288011243 :Bbasis= 294.9455976839429
+        </code>
+        </pre>
+</div>
     </BODY>
 </HTML>
