@@ -154,6 +154,39 @@
         # Absis= 246.67391288011243 :Bbasis= 294.9455976839429
         </code>
         </pre>
+
+    <hr size="10">
+    <center><h2>--- 二母数ワイブル分布 ---</h2></center> 
+    母集団の強度Sが二母数ワイブル分布に従い、形状母数\(\alpha\)が既知とする。まず、形状母数\(\alpha\)、尺度母数形状母数\(\beta\)である二母数ワイブル分布に従うサンプルデータ10点を下記により発生する。A許容値、B許容値の評価プログラムを示す。
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+            import numpy as np
+            ### 例題 ###
+            #### 二母数ワイブル分布の乱数発生 ###
+            #alpha 形状母数　beta 尺度母数 n 個数
+            alpha=8.0
+            beta=400.0
+            n=10
+            dd=np.random.weibull(alpha,n)*beta
+        </code>
+        </pre>
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <FONT SIZE="4">
+        <pre>
+        <code>
+            from Utility import AllowableStress as AlS
+            # 形状母数は既知であるとして、A許容値、B許容値を評価する #
+            ps=AlS.PAStressW()
+            ps.SetData(dd,alpha)
+            print('Abasis=',ps.Abasis(),'Bbasis=',ps.Bbasis())
+            #Abasis= 205.56913798387714 Bbasis= 275.7528938820833
+        </code>
+        </pre>
 </div>
     </BODY>
 </HTML>
