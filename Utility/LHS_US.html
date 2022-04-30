@@ -1,0 +1,66 @@
+<HTML>
+    <HEAD>
+        <TITLE>LHS+US管理クラス</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <style>
+            .margin{margin-right: 50px; margin-left: 50px;}
+            P { text-indent: 1em; }
+        </style>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90"> 
+        <center><h1>LHS+US管理クラス</h1></center>
+        <div class="margin">
+            <p>
+                <h2>概要</h2>
+                <p>
+                    モンテカルロシミュレーションで乱数発生を行うにあたり、少ないサンプル数で広範囲の領域をカバーし、信頼性評価を行うにあたってラテンハイパーキューブ法(LHS)が有効であることがOlssonらによって示されている。一方で、限界状態曲面近傍に関心があるとき、必ずしも純粋に確率面数の分布に基づいて乱数を発生する必要はない。このような観点から、LiらはLHSと一様乱数によるサンプリング(US)を組み合わせる方法を提案した。ここでは、LHS+USと表記する。技術的詳細については、下記文献を参照のこと。LHS+USのサンプリングを管理する基底クラスLHSbaseをモジュールLimitStateの中に提供する。限界状態関数を定義するユーザclassで継承することにより、任意の限界状態関数に対して適用可能となる。
+                    <ol>
+                        <li>酒井信介、木原重光、「サポートベクタマシンを用いたプラント保全データの信頼性評価」、圧力技術、Vol.59、No.3，pp.129-139(2021).</li>
+                    </ol>
+                </p>
+                <h2>モジュールLimitState、クラスLHSbaseの利用法</h2>
+                <ol>
+                    <li>ターミナルモードで以下のコマンドを入力し，パッケージUtilityをインストールする。その際、Ver1.1.1以上であることを確認すること。<br>
+                        pip install git+https://github.com/ShinsukeSakai0321/Utility<br>
+                    ただし、更新の場合には<br>
+                        pip install --upgrade git+https://github.com/ShinsukeSakai0321/Utility            
+                        </li>
+                    <li>プログラム内で以下のimport文でLimitStateモジュールを読み込む<br>
+                        from Utility import LimitState as ls</li>
+                    <li>登録されているLHSbaseクラスの情報は以下のhelp文で確認できる<br>
+                        help(ls.LHSbase))</li>
+                </ol>
+            </p>
+            <hr width="500">
+            <center>プログラムリスト</center>
+            <hr width="500">
+            <h3>限界状態関数管理クラスの作成</h3>
+            <p>まず、ls.LHSbaseを継承する限界状態関数管理クラスを作成する。最も基本的なRSモデルの場合について例示する。</p>
+            <pre>
+                class rnd_RS(LHSbase):
+                def __init__(self,nv):
+                    super().__init__(nv)
+                def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。変数の順番に格納されている。
+                        rr=rnd[:,0]  #変数の順番に乱数列を取り出していく
+                        ss=rnd[:,1]
+                        gval=rr-ss  #限界状態関数の計算結果リスト
+                        return gval #そのリストをもどす
+            </pre>
+            <h3>限界状態関数管理クラスを使ったプログラム例</h3>
+            <pre>
+                n=300 #サンプル点数
+                Mr=170 #強度の平均値
+                Sr=20 #強度の標準偏差
+                Ms=100 #荷重の平均値
+                Ss=20 #荷重の標準偏差
+                k=3 #USの領域をk*標準偏差に設定
+                means = [Mr,Ms]
+                stdvs = [Sr,Ss]
+                nv=len(means) #変数の数
+                lhb=rnd_RS(nv) #インスタンスの生成
+                rnd,t=lhb.Calc(n,k,means,stdvs)#LHS+USの乱数、破損リストがもどされる
+            </pre>
+            <p>この結果、rnd[:,0]にR、rnd[:,1]にSの乱数が格納されている。tは、破損、非破損データのリスト。</p>
+        </div>
+    </BODY>
+</HTML>
