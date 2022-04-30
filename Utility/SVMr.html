@@ -1,0 +1,74 @@
+<HTML>
+    <HEAD>
+        <TITLE>SVMrモジュール</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <style>
+            .margin{margin-right: 50px; margin-left: 50px;}
+            P { text-indent: 1em; }
+        </style>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90"> 
+        <center><h1>サポートベクタマシンの信頼性評価への適用</h1></center>
+        <div class="margin">
+            <p>
+                <h2>概要</h2>
+                <p>
+                    サポートベクタマシン(SVM)を信頼性評価に利用することにより、信頼性工学の重要な評価量である設計点、信頼性指標、感度などが効率よく求まることが酒井らによって示されている。技術的詳細は下記文献を参照のこと。このページでは、この原理に基づく評価をサポートするモジュールSVMrの情報を提供する。
+                    <ol>
+                        <li>酒井信介、木原重光、「サポートベクタマシンを用いたプラント保全データの信頼性評価」、圧力技術、Vol.59、No.3，pp.129-139(2021).</li>
+                    </ol>
+                </p>
+                <h2>モジュールSVMrの利用法</h2>
+                <ol>
+                    <li>ターミナルモードで以下のコマンドを入力し，パッケージUtilityをインストールする。その際、Ver1.1.1以上であることを確認すること。<br>
+                        pip install git+https://github.com/ShinsukeSakai0321/Utility<br>
+                    ただし、更新の場合には<br>
+                        pip install --upgrade git+https://github.com/ShinsukeSakai0321/Utility            
+                        </li>
+                    <li>プログラム内で以下のimport文でSVMrモジュールを読み込む<br>
+                        from Utility import SVMr as svm</li>
+                    <li>モジュールの詳細は以下のコマンドにより確認できる。<br>
+                        help(svm)</li>
+                </ol>
+            </p>
+            <hr width="500">
+            <center>プログラムリスト</center>
+            <hr width="500">
+            <h3>入力データの準備</h3>
+            <p>モンテカルロシミュレーションもしくは、実験により教師データXと破損、非破損のクラスyを準備する。ここでは、最も簡単な例として、RSモデルの場合について、モンテカルロシミュレーションで入力データを準備する場合について例示する。なお、モンテカルロシミュレーションの部分は、「LHS+US管理クラス」のページを参照のこと。</p>
+            <h3>教示データの作成</h3>
+            <p>「LHS+US管理クラス」のページの手順で、モンテカルロシミュレーションにて教師データX,yを発生する。クラスrnd_RSについては、「LHS+US管理クラス」のページを参照のこと。</p>
+            <pre>
+                n=300
+                Mr=170
+                Sr=20
+                Ms=100
+                Ss=20
+                k=3
+                means = [Mr,Ms]
+                stdvs = [Sr,Ss]
+                nv=len(means) #変数の数
+                lhb=rnd_RS(nv)
+                rnd,y=lhb.Calc(n,k,means,stdvs)
+            </pre>
+            <h3>SVMの準備のために、教師データを基準化する</h3>
+            <pre>
+                X_std=(rnd-means)/stdvs
+            </pre>
+            <h3>SVMを用いた信頼性解析</h3>
+            <pre>
+                import numpy as np
+                from Utility import SVMr as svm
+                svmr=svm.SVMr(X_std,y) #インスタンスの生成
+                svmr.SVM() #SVM解析
+                dp,beta=svmr.SV_RF() #提案アルゴリズムによる設計点探索
+                print('beta=',beta) #信頼性指標
+                Dp=dp*stdvs+means #原空間にもどす
+                print('DP=',Dp) #設計点
+                print('gval=',svmr.g(np.array(dp))) #設計点でのg値、0に近ければOK。
+                alpha,deriv=svmr.sv_alpha(dp)
+                print('alpha=',alpha) #感度値
+            </pre>
+        </div>
+    </BODY>
+</HTML>
