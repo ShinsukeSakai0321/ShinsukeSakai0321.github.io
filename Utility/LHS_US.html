@@ -38,13 +38,13 @@
             <p>まず、ls.LHSbaseを継承する限界状態関数管理クラスを作成する。最も基本的なRSモデルの場合について例示する。</p>
             <pre>
                 class rnd_RS(LHSbase):
-                def __init__(self,nv):
-                    super().__init__(nv)
-                def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。変数の順番に格納されている。
-                        rr=rnd[:,0]  #変数の順番に乱数列を取り出していく
-                        ss=rnd[:,1]
-                        gval=rr-ss  #限界状態関数の計算結果リスト
-                        return gval #そのリストをもどす
+                    def __init__(self,nv):
+                        super().__init__(nv)
+                    def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。変数の順番に格納されている。
+                            rr=rnd[:,0]  #変数の順番に乱数列を取り出していく
+                            ss=rnd[:,1]
+                            gval=rr-ss  #限界状態関数の計算結果リスト
+                            return gval #そのリストをもどす
             </pre>
             <h3>限界状態関数管理クラスを使ったプログラム例</h3>
             <pre>
