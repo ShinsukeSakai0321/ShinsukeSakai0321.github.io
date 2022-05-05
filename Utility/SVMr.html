@@ -39,23 +39,20 @@
             <h3>教示データの作成</h3>
             <p>「LHS+US管理クラス」のページの手順で、モンテカルロシミュレーションにて教師データX,yを発生する。クラスrnd_RSについては、「LHS+US管理クラス」のページを参照のこと。なお、実験データに対して適用するときには、この手順は不要である。</p>
             <pre>
-                n=300
-                Mr=170
-                Sr=20
-                Ms=100
-                Ss=20
-                k=3
-                means = [Mr,Ms]
-                stdvs = [Sr,Ss]
-                nv=len(means) #変数の数
-                lhb=rnd_RS(nv)
-                rnd,y=lhb.Calc(n,k,means,stdvs)
+                #データはJSON形式で与える
+                data={"r":{"mean":170,"cov":20/170,"dist":"normal"},
+                     "s":{"mean":100,"cov":20/100,"dist":"normal"},
+                     }
+                nv=2 #変数の数
+                n=300 #サンプル点数
+                k=3 #サンプリングの領域の広さ
+                lhb=rnd_RS(nv) #インスタンスの生成
+                lhb.SetData(data) #データセット
+                rnd,t=lhb.Calc(n,k) #LHS+USの乱数、破損リストがもどされる
+                X_std=(rnd-lhb.Means())/lhb.Stdvs() #データの基準化
+                print(lhb.gMean()) #平均値でのg値の値
             </pre>
-            <h3>教師データの基準化</h3>
-            <p>SVMの準備のために、教師データを基準化する。実験データに適用するときには、rndの部分を、入力パラメータに置き換える。平均値、標準偏差には標本値の評価などを用いる。また、yは、破損、非破損のリストとする。</p>
-            <pre>
-                X_std=(rnd-means)/stdvs
-            </pre>
+
             <h3>SVMを用いた信頼性解析</h3>
             <pre>
                 import numpy as np
