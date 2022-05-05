@@ -37,10 +37,10 @@
             <h3>限界状態関数管理クラスの作成</h3>
             <p>まず、ls.LHSbaseを継承する限界状態関数管理クラスを作成する。最も基本的なRSモデルの場合について例示する。</p>
             <pre>
-                class rnd_RS(ls.LHSbase):
-                    def __init__(self,nv):
+                class rnd_RS(ls.LHSbase): #LHSbaseを継承する
+                    def __init__(self,nv): #nvは変数の数
                         super().__init__(nv)
-                    def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。変数の順番に格納されている。
+                    def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。下記例題のJSONデータの変数の順番に格納されている。
                             rr=rnd[:,0]  #変数の順番に乱数列を取り出していく
                             ss=rnd[:,1]
                             gval=rr-ss  #限界状態関数の計算結果リスト
@@ -48,18 +48,18 @@
             </pre>
             <h3>限界状態関数管理クラスを使ったプログラム例</h3>
             <pre>
+                #データはJSON形式で与える
+                data={"r":{"mean":170,"cov":20/170,"dist":"normal"},
+                     "s":{"mean":100,"cov":20/100,"dist":"normal"},
+                     }
+                nv=2 #変数の数
                 n=300 #サンプル点数
-                Mr=170 #強度の平均値
-                Sr=20 #強度の標準偏差
-                Ms=100 #荷重の平均値
-                Ss=20 #荷重の標準偏差
-                k=3 #USの領域をk*標準偏差に設定
-                means = [Mr,Ms]
-                stdvs = [Sr,Ss]
-                nv=len(means) #変数の数
+                k=3 #サンプリングの領域の広さ
                 lhb=rnd_RS(nv) #インスタンスの生成
-                rnd,t=lhb.Calc(n,k,means,stdvs)#LHS+USの乱数、破損リストがもどされる
-            </pre>
+                lhb.SetData(data) #データセット
+                rnd,t=lhb.Calc(n,k) #LHS+USの乱数、破損リストがもどされる
+                X_std=(rnd-lhb.Means())/lhb.Stdvs() #データの基準化
+                print(lhb.gMean()) #平均値でのg値の値            </pre>
             <p>この結果、rnd[:,0]にR、rnd[:,1]にSの乱数が格納されている。tは、破損、非破損データのリスト。</p>
         </div>
     </BODY>
