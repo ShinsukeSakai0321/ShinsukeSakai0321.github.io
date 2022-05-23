@@ -277,8 +277,8 @@
             <p>[3.8330281658128675, 3.7612536656241864, 4.3876843910772845, 4.090647398473586]</p>
             </pre>
             </FONT>
-        <h2>例題6</h2>
-        <p>例題3と同じ問題について限界状態関数のみを表現するクラスを記述して信頼性評価を行う。</p>
+        <h2>例題7</h2>
+        <p>例題3と同じ問題について限界状態関数のみを表現するクラスを記述して信頼性評価を行う。例題3やこの例題では、設計点探索のアルゴリズムとしてRackwitz Fiessler法を用いている。この場合、探索の開始点を指定する必要があるが、デフォールトとしては基準化空間の原点が指定されるようになっている。原点以外の任意点を指定する場合の例題は例題8に示してある。</p>
         <FONT SIZE="4">
         <hr width="500">
         <center>プログラムリスト</center>
@@ -323,7 +323,77 @@
             print('beta=',rs.GetBeta())#信頼性指標の取得
             print('alpha=',rs.GetAlpha())#感度の取得
             print('POF=',rs.GetPOF())#破損確率の取得            
-    </pre>
+        </pre>
+        </FONT>
+        <h2>例題8</h2>
+        <p>例題3と同じ問題について限界状態関数のみを表現するクラスを記述して信頼性評価を行う。例題3やこの例題では、設計点探索のアルゴリズムとしてRackwitz Fiessler法を用いている。この場合、探索の開始点を指定する必要があるが、デフォールトとしては基準化空間の原点(平均点)が指定されるようになっている。しかし、場合によっては、原点以外の任意の座標点を開始点として指定したいこともある。以下にその例題を示す。### 1 ###と### 2 ###が変更点である</p>
+        <FONT SIZE="4">
+            <hr width="500">
+            <center>プログラムリスト</center>
+            <hr width="500">
+            <pre>
+                from Utility import LimitState as ls  #Ver.1.2.3 以上
+                from sympy import *
+                class GRS(ls.RelBase):
+                    ... 例題7と同じ
+                    ...
+                # main program #
+                #入力データは辞書形式で表現
+                data={"r":{"mean":200,"cov":0.05,"dist":"normal"},#辞書形式で与える入力データ
+                "s":{"mean":100,"cov":0.2,"dist":"normal"}            }
+                rs=GRS()
+                print('val=',rs.Geval(data))#dataに対する限界状態関数値
+                ### 1 ### まず探索開始点のリストを定義。例えば[100,100]の場合について例示。
+                nstart=[100,100]
+                ### 2 ### Reliabilityメソッドの引数startに'Coordinate'を指定し、Xstartにnstartを指定する
+                rs.Reliability(data,start='Coordinate',Xstart=nstart)#dataに対する信頼性評価
+                print('beta=',rs.GetBeta())#信頼性指標の取得
+                print('alpha=',rs.GetAlpha())#感度の取得
+                print('POF=',rs.GetPOF())#破損確率の取得            
+            </pre>
+            </FONT>
+
+            <h2>例題9</h2>
+        <p>設計点探索のアルゴリズムとしてRackwitz Fiessler法を用いている場合、local minimumに収束してしまう場合がある。このような事態を防ぐためには、探索のスタート点を広域から、徐々に絞り込んでいけばよい。最適化プログラムOptunaを使った例題を以下に示す。限界状態関数は例題8と同じものを使う。Optuna適用のために、まずclass Objectを用意する。ただし、この探索方法は一般に相当の時間を要する。local minimumへの収束の懸念がある場合にのみ行う。</p>
+        <FONT SIZE="4">
+            <hr width="500">
+            <center>プログラムリスト</center>
+            <hr width="500">
+            <pre>
+                from Utility import LimitState as ls  #Ver.1.2.3 以上
+                from sympy import *
+                class GRS(ls.RelBase):
+                    ... 例題7と同じ
+                    ...
+
+                import numpy as np
+                import optuna
+                    
+                class Objective:
+                    def __init__(self,data):
+                        # 変数X,yの初期化
+                        self.data=data
+                    def __call__(self, trial):
+                        rs=GRS()
+                        ### スタート点の調査範囲の指定
+                        r = trial.suggest_uniform('r', 50,300)
+                        s = trial.suggest_uniform('s', 50,300)
+                        start=[r,s]
+                        rs.Reliability(self.data,start='Coordinate',Xstart=start)
+                        return rs.GetBeta()  #信頼性指標を戻す
+                # main program #
+                #入力データは辞書形式で表現
+                data={"r":{"mean":200,"cov":0.05,"dist":"normal"},#辞書形式で与える入力データ
+                "s":{"mean":100,"cov":0.2,"dist":"normal"}            }
+                optuna.logging.disable_default_handler() #optunaの出力を抑制する
+                objective = Objective(data)
+                study = optuna.create_study(direction='minimize')
+                study.optimize(objective, timeout=60)
+                
+                # 最小の信頼性指標と、その値を与えたスタート点の出力
+                print('params:', study.best_params,',best_value:',study.best_value)       
+            </pre>
+            </FONT>
     </div>   
     </BODY>
 </HTML>
