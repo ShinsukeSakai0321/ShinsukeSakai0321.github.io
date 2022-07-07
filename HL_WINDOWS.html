@@ -1,0 +1,139 @@
+<HTML>
+    <HEAD>
+        <TITLE>レインフロー法による疲労被害評価ソフト(WINDOWS版)</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <style>
+            .margin{margin-right: 50px; margin-left: 50px;}
+            P { text-indent: 1em; }
+        </style>
+    </HEAD>
+    <BODY BGCOLOR="#90EE90">    
+        <center><h1>レインフロー法による疲労被害評価ソフト(WINDOWS版)</h1></center>
+        <div class="margin">
+        <h2>概要</h2>
+        <p>
+            ビーク値の時刻歴データからレインフロー計数を行う実行プログラム提供する．アルゴリズムはHLrainflow法に基づく．<br>
+            <font color="red">[注意]</font>文献[1]に記載されているヒステリシスループ法のアルゴリズムは、実質レインフロー法の評価結果と同じ結果を与えますが、厳密に見ると少しだけ異なっていました．しかし、ヒステリシスループ法のアルゴリズムを部分的に変更するだけで、完全にレインフロー法と合致することを最近見出しました。ここで、提供するアルゴリズムは完全にレインフロー法に合致するはずです。アルゴリズムの詳細は「HLrainflow法アルゴリズム」のページを参照して下さい．<br>
+            提供する実行プログラムにおいては，データ領域は動的に割り当てるため，データ数に制限はなく，使用する計算機の制限で決まります．
+        </p>
+        <h2>利用するための手続き</h2>
+        <ol>
+            <li>下記より圧縮ファイルをダウンロードする<br>
+                <a href='HLrainflow.zip'>HLrainflow.zip</a></li>
+            <li> 解凍する</li>
+            <li>作業フォルダに，実行ファイルと入力ファイルを置く</li>
+        </ol>
+        <h2>提供するプログラム，サンプルデータ</h2>
+        <table border="1">
+            <tr>
+                <th>ファイル名</th><th>内容</th>
+            </tr>
+
+            <tr><td>PeakCalc.exe</td><td>波形履歴データからピーク値を計算する</td>
+            </tr>
+            <tr>
+                <td>HLrainflow.exe</td><td>ピーク値データからレインフロー計数を実行する</td>
+            </tr>
+            <tr>
+                <td>wave.csv</td><td>波形履歴データのサンプルデータ</td>
+            </tr>
+            <tr>
+                <td>ASTM.csv</td><td>ASTM E1049-85(2017) Rainflow Counting Exampleに掲載されているピーク値データ</td>
+            </tr>    
+        </table>
+
+        <h2>利用法</h2>
+        <ol>
+            <li>ターミナルモードのウィンドウを開きます</li>
+            <li>作業フォルダの位置に異動します</li>
+            <li>入力ファイルは，標準入力から与え，計算結果は標準出力に出力されます</li>
+            <li>例えば，下記の入力により，入力データのピーク値データが出力ファイルに出力されます<br>
+                  "実行プログラム <入力ファイル >出力ファイル" </li>
+        </ol>
+
+        <h2>データフォーマット</h2>
+        波形履歴データ<br>
+        一行目にwaveと記述され、二行目以降に履歴データが書かれる<br>
+        <br>
+        ピークデータ<br>
+        一行目にpeakと記述され、二行目以降にピーク値が書かれる<br>
+        <br>
+        レインフロー計数結果<br>
+        一行目にhalfR,halfMと記述され、二行目以降に 半波レンジ値、半波平均値　が記述される
+        <h2>例題1</h2>
+        <p>ASTM E1049-85(2017) Rainflow Counting Example <a href='ASTM.csv'>ASTM.csv</a></p>
+        <FONT SIZE="4">
+        <pre>
+            HLrainflow < ASTM.csv
+        </pre>
+        </FONT>
+        <br><br>
+        この結果，ASTMに記載されているのと同じ以下の出力が画面に出力されることを確認する．
+        <FONT SIZE="4">
+        <pre>
+            halfR,halfM
+            4.000000,1.000000
+            4.000000,1.000000
+            3.000000,-0.500000
+            4.000000,-1.000000
+            8.000000,1.000000
+            9.000000,0.500000
+            8.000000,0.000000
+            6.000000,1.000000
+        </pre>
+        </FONT>
+        なお，結果をファイルに出力したければ，以下のように記述します．<br>
+        <FONT SIZE="4">
+        <pre>
+            HLrainflow < ASTM.csv >ASTM_res.csv
+        </pre>
+        </FONT>
+        <h2>例題2</h2>
+        <p>波形履歴<a href='wave.csv'>wave.csv</a>からピーク値を計算する</p>
+        <FONT SIZE="4">
+        <pre>
+            PeakCalc < wave.csv
+        </pre>
+        </FONT>
+        この結果，以下が画面に出力されることを確認する．
+        <FONT SIZE="4">
+        <pre>
+            peak
+            0.044859
+            -0.037778
+            0.001025
+            -0.020964
+            0.011101
+            -0.001281
+            0.011164
+            -0.007011   
+        </pre>
+        </FONT>
+
+        <h2>例題3</h2>
+        <p>例題2の結果をパイプ処理により直ちにレインフロー計数する</p>
+        <FONT SIZE="4">
+            <pre>
+                PeakCalc < wave.csv | HLrainflow
+            </pre>
+        </FONT>
+        この結果，以下が画面に出力されることを確認する．
+        <FONT SIZE="4">
+        <pre>
+            halfR,halfM
+            0.021989,-0.009969
+            0.021989,-0.009969
+            0.012382,0.004910
+            0.012382,0.004910
+            0.082637,0.003541
+            0.048942,-0.013307
+            0.018175,0.002077     
+        </pre>
+        </FONT>
+
+
+        <h2>参考文献</h2>
+        [1]岡村弘之，板垣　浩著「強度の統計的取り扱い」，培風館， 4.3疲労の安全寿命
+    </div>
+    </BODY>
+</HTML>
