@@ -12,7 +12,7 @@
         <div class="margin">
         <h2>概要</h2>
         <p>
-            ビーク値の時刻歴データからレインフロー計数を行う機能をGitHub上からパッケージとして提供する．パッケージ名はRBM，モジュール名Hloopである．アルゴリズムはHLrainflow法に基づく．<br>
+            ビーク値の時刻歴データからレインフロー計数を行う機能をGitHub上からパッケージとして提供する．パッケージ名はRBM，モジュール名HLrainflowである．アルゴリズムはHLrainflow法に基づく．<br>
             <font color="red">[注意]</font>文献[1]に記載されているヒステリシスループ法のアルゴリズムは、実質レインフロー法の評価結果と同じ結果を与えますが、厳密に見ると少しだけ異なっていました．しかし、ヒステリシスループ法のアルゴリズムを部分的に変更するだけで、完全にレインフロー法と合致することを最近見出しました。ここで、提供するアルゴリズムは完全にレインフロー法に合致するはずです。アルゴリズムの詳細は「HLrainflow法アルゴリズム」のページを参照して下さい．
         </p>
         <h2>モジュールHLの利用法</h2>
@@ -62,7 +62,7 @@
         <p>ASTM E1049-85(2017) Rainflow Counting Example</p>
         <FONT SIZE="4">
         <pre>
-            from RBM import Hloop as hloop
+            from RBM import HLrainflow as hloop
             Sample1=[-2,1,-3,5,-1,3,-4,4,-2]
             peak=Sample1
             hl=hloop.HL()
@@ -84,7 +84,7 @@
         <p><a href='https://fatigue-life.com/rainflow-counting/'>例題の検証サイト</a></p>
         <FONT SIZE="4">
         <pre>
-            from RBM import Hloop as hloop
+            from RBM import HLrainflow as hloop
             Sample1=[2,-14,10,0,13,-9,11,-8,8,-9,15,-4,10,0,13,0]
             peak=Sample1
             hl=hloop.HL()
@@ -106,7 +106,7 @@
         <p>サンプルデータに対して波形計数処理を実施する</p>
         <FONT SIZE="4">
         <pre>
-            from RBM import Hloop as hloop
+            from RBM import HLrainflow as hloop
             hl=hloop.HL()
             wave=hl.demo_data()
             hl.SetWave(wave)
@@ -130,7 +130,7 @@
         <p>サンプルデータに対してピーク値計算を実施する</p>
         <FONT SIZE="4">
         <pre>
-            from RBM import Hloop as hloop
+            from RBM import HLrainflow as hloop
             hl=hloop.HL()
             wave=hl.demo_data()
             hl.SetWave(wave)
@@ -152,7 +152,7 @@
         <p>ピーク値データを与えてレインフロー評価する</p>
         <FONT SIZE="4">
         <pre>
-            from RBM import Hloop as hloop
+            from RBM import HLrainflow as hloop
             Sample1=[0,2,1,4,-3,2.5,-4,3,-5,0]
             peak=Sample1
             hl=hloop.HL()
