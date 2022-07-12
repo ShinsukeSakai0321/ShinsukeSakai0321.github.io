@@ -1,0 +1,92 @@
+<HTML>
+    <HEAD>
+        <TITLE>レインフロー法による疲労被害評価ソフト(R版)</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <style>
+            .margin{margin-right: 50px; margin-left: 50px;}
+            P { text-indent: 1em; }
+        </style>
+    </HEAD>
+    <BODY BGCOLOR="#90EE90">  
+        <center><h1>レインフロー法による疲労被害評価ソフト(R版)</h1></center>
+        <div class="margin">
+        <h2>概要</h2>
+        <p>
+            ビーク値の時刻歴データからレインフロー計数を行う機能をGitHub上からパッケージとして提供する．パッケージ名はRBM，モジュール名HLrainflowである．アルゴリズムはHLrainflow法に基づく．<br>
+            <font color="red">[注意]</font>文献[1]に記載されているヒステリシスループ法のアルゴリズムは、実質レインフロー法の評価結果と同じ結果を与えますが、厳密に見ると少しだけ異なっていました．しかし、ヒステリシスループ法のアルゴリズムを部分的に変更するだけで、完全にレインフロー法と合致することを最近見出しました。ここで、提供するアルゴリズムは完全にレインフロー法に合致するはずです。アルゴリズムの詳細は「HLrainflow法アルゴリズム」のページを参照して下さい．
+        </p>
+
+
+        <h2>パッケージHLの利用法</h2>
+        <ol>
+            <li>install.packages("devtools")コマンドによりdevtoolsパッケージをインストールする</li>
+            <li>library(devtools)により読み込む</li>
+            <li>install_github("ShinsukeSakai0321/HL")の実行により，レインフロー係数法のパッケージHLをGitHubよりインストールする</li>
+            <li>library(HL)により読み込む</li>
+            <li>利用できるコマンドの一覧はhelp(package=HL)により見ることができる．</li>
+            <li>コマンドの利用法を見るためには?HLrainflowもしくは?PeakCalcを入力</li>
+            <li>利用法が表示されるが，その中のexampleのところに計算されている部分を新しいscriptにコピペして実行することにより，計算の確認を行うことができる</li>
+        </ol>
+        <h2>登録されているコマンド</h2>
+        <table border="1">
+            <tr>
+                <th>コマンド</th><th>内容</th>
+            </tr>
+            <tr>
+                <td>PeakCalc</td><td>時系列波形からピーク値を算出する</td>
+            </tr>
+            <tr><td>HLrainflow</td><td>ピーク値データからレインフロー計数結果を出力する</td>
+            </tr>      
+        </table>
+
+        <h2>例題1</h2>
+        <p>ASTM E1049-85(2017) Rainflow Counting Example</p>
+        <FONT SIZE="4">
+        <pre>
+            pk<-c(-2,1,-3,5,-1,3,-4,4,-2)
+            HLrainflow(Peak=pk)   
+        </pre>
+        </FONT>
+        この結果，ASTMに記載されているのと同じ以下の出力を確認する．
+        <FONT SIZE="4">
+        <pre>
+            halfR halfM
+            1     4   1.0
+            2     4   1.0
+            3     3  -0.5
+            4     4  -1.0
+            5     8   1.0
+            6     9   0.5
+            7     8   0.0
+            8     6   1.0  
+        </pre>
+        </FONT>
+
+        <h2>例題2</h2>
+        <p>波形履歴からピーク値を計算後に，レインフロー計数を行う</p>
+        <FONT SIZE="4">
+        <pre>
+            wave<-c(5e-3,3.2e-2,3.8e-2,-3.3e-2,-1.9e-2,-1e-2,1e-3,-8e-3,-2e-2,1e-2,-1e-3,4e-3,1.1e-2,-1e-3,-7e-3,-2e-3)
+            pk<-PeakCalc(Wave=wave)
+            HLrainflow(Peak=pk)
+        </pre>
+        </FONT>
+        この結果，以下の出力を確認する．
+        <FONT SIZE="4">
+        <pre>
+            halfR halfM
+            1 0.02198929 -0.009969643
+            2 0.02198929 -0.009969643
+            3 0.01238186  0.004909680
+            4 0.01238186  0.004909680
+            5 0.08263671  0.003540413
+            6 0.04894241 -0.013306734
+            7 0.01817584  0.002076555
+        </pre>
+        </FONT>
+
+        <h2>参考文献</h2>
+        [1]岡村弘之，板垣　浩著「強度の統計的取り扱い」，培風館， 4.3疲労の安全寿命
+        </div>
+    </BODY>
+</HTML>
