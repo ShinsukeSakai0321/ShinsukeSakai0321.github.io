@@ -343,7 +343,7 @@
                 data={"r":{"mean":200,"cov":0.05,"dist":"normal"},#辞書形式で与える入力データ
                 "s":{"mean":100,"cov":0.2,"dist":"normal"}            }
                 rs=GRS()
-                print('val=',rs.Geval(data))#dataに対する限界状態関数値
+                print('val=',rs.Gcheck(data))#dataに対する限界状態関数値
                 ### 1 ### まず探索開始点のリストを定義。例えば[100,100]の場合について例示。
                 nstart=[100,100]
                 ### 2 ### Reliabilityメソッドの引数startに'Coordinate'を指定し、Xstartにnstartを指定する
