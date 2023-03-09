@@ -10,6 +10,7 @@
     <BODY TEXT="black" BGCOLOR="#90EE90"> 
         <center><h1>サポートベクタマシンの信頼性評価への適用</h1></center>
         <div class="margin">
+        <FONT SIZE="4">
             <p>
                 <h2>概要</h2>
                 <p>
@@ -36,19 +37,32 @@
             <hr width="500">
             <h3>入力データの準備</h3>
             <p>モンテカルロシミュレーションもしくは、実験により教師データXと破損、非破損のクラスyを準備する。ここでは、最も簡単な例として、RSモデルの場合について、モンテカルロシミュレーションで入力データを準備する場合について例示する。なお、モンテカルロシミュレーションの部分は、「LHS+US管理クラス」のページを参照のこと。</p>
-            <h3>教示データの作成</h3>
-            <p>「LHS+US管理クラス」のページの手順で、モンテカルロシミュレーションにて教師データX,yを発生する。クラスrnd_RSについては、「LHS+US管理クラス」のページを参照のこと。なお、実験データに対して適用するときには、この手順は不要である。</p>
+            <h3>教師データの作成</h3>
+            <p>「LHS+US管理クラス」のページの手順で、モンテカルロシミュレーションにて教師データX,yを発生する。クラスrnd_RSについては、「LHS+US管理クラス」のページを参照のこと。なお、実験データに対して適用するときには、この手順は不要である。限界状態関数を定義するとともに、ラテンハイパーキューブの機能を管理するクラスLHSbaseを継承するクラスの例が下記である。</p>
             <pre>
+                from Utility import LimitState as ls
+                class rnd_RS(ls.LHSbase): #LHSbaseを継承する
+                    def __init__(self,nv): #nvは変数の数
+                        super().__init__(nv)
+                    def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。rndの座標値に対するgのリストがもどされる。
+                            rr=rnd[:,0]  #変数の順番に乱数列を取り出していく
+                            ss=rnd[:,1]
+                            gval=rr-ss  #限界状態関数の計算結果リスト
+                            return gval #そのリストをもどす
+            </pre>
+            <h3>Latin Hypercube法による限界状態曲面周辺の乱数列の発生</h3>
+            <pre>
+                from Utility import SVMr as svm
                 #データはJSON形式で与える
                 data={"r":{"mean":170,"cov":20/170,"dist":"normal"},
-                     "s":{"mean":100,"cov":20/100,"dist":"normal"},
-                     }
+                        "s":{"mean":100,"cov":20/100,"dist":"normal"},
+                        }
                 nv=2 #変数の数
-                n=300 #サンプル点数
+                n=50 #サンプル点数
                 k=3 #サンプリングの領域の広さ
                 lhb=rnd_RS(nv) #インスタンスの生成
                 lhb.SetData(data) #データセット
-                rnd,t=lhb.Calc(n,k) #LHS+USの乱数、破損リストがもどされる
+                rnd,t=lhb.Calc(n,k) #LHS+USの乱数、破損リストがもどされる。限界状態曲面周辺の標準偏差*kの領域で乱数が発生される。
                 X_std=(rnd-lhb.Means())/lhb.Stdvs() #データの基準化
                 print(lhb.gMean()) #平均値でのg値の値
             </pre>
@@ -69,11 +83,397 @@
             </pre>
             <p>出力例</p>
             <pre>
-                beta= 2.4837691244416473
-                DP= [135.54868892 135.78757871]
-                gval= 0.0015562832104905056
-                alpha= [ 0.68579549 -0.72779431]
+                beta= 2.017045290181296
+                DP= [147.75534244 133.6535866 ]
+                gval= 0.30757330466965893
+                alpha= [ 0.84174153 -0.53988072]
             </pre>
+
+            <h2>例題1:非線形モデルの簡単な例題</h2>
+            <p><b>SVM</b>のdecision_functionをg分布と見立て，Lagrange未定乗数法によりDP探索,decision_functionを使って微分値を計算．RSモデルにおいて限界状態関数が以下とし，非線形関数の場合について適用する
+                $$
+                g=S_y-\frac{P}{A}
+                $$
+                各変数の(平均値，標準偏差)は， \(S_y\),\(P\),\(A\)について，各々(200,10),(1500,100),(10,1)とする．このとき， \(P_f=0.01796\),\(\beta=2.0978\)である．
+                \(\alpha=(0.3558153, -0.4307599,  0.8293620)\), \(DP=(192.535526, 1590.367001,    8.260122)\)
+        
+            <hr width="500">
+            <center>プログラムリスト</center>
+ 
+            <hr width="500">
+            <pre>
+            <code>
+                #　限界状態関数を管理するクラス
+                from Utility import LimitState as ls            
+                class rnd_RS(ls.LHSbase): #LHSbaseを継承する
+                    def __init__(self,nv): #nvは変数の数
+                        super().__init__(nv)
+                    def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。下記例題のJSONデータの変数の順番に格納されている。
+                            sy=rnd[:,0]  #変数の順番に乱数列を取り出していく
+                            p=rnd[:,1]
+                            a=rnd[:,2]
+                            gval=sy-p/a  #限界状態関数の計算結果リスト
+                            return gval #そのリストをもどす
+                # 乱数列の発生
+                #データはJSON形式で与える
+                data={"sy":{"mean":200,"cov":10/200,"dist":"normal"},
+                        "p":{"mean":1500,"cov":100/1500,"dist":"normal"},
+                        "a":{"mean":10,"cov":1/10,"dist":"normal"},
+                        }
+                nv=3 #変数の数
+                n=100 #サンプル点数
+                k=3 #サンプリングの領域の広さ
+                lhb=rnd_RS(nv) #インスタンスの生成
+                lhb.SetData(data) #データセット
+                rnd,t=lhb.Calc(n,k) #LHS+USの乱数、破損リストがもどされる
+                X_std=(rnd-lhb.Means())/lhb.Stdvs() #データの基準化
+                print(lhb.gMean()) #平均値でのg値の値
+                # SVMによる信頼性評価
+                import numpy as np
+                from Utility import SVMr as svm
+                svmr=svm.SVMr(X_std,t) #インスタンスの生成
+                svmr.SVM() #SVM解析
+                dp,beta=svmr.SV_RF() #提案アルゴリズムによる設計点探索
+                print('beta=',beta) #信頼性指標
+                Dp=dp*lhb.Stdvs()+lhb.Means() #原空間にもどす
+                print('DP=',Dp) #設計点
+                print('gval=',svmr.g(np.array(dp))) #設計点でのg値、0に近ければOK。
+                alpha,deriv=svmr.sv_alpha(dp)
+                print('alpha=',alpha) #感度値
+            </code>
+         
+            出力例
+            beta= 1.9175487989179865
+            DP= [ 191.21978445 1576.8826016     8.47849479]
+            gval= 0.0006302748883961762
+            alpha= [ 0.45507815 -0.39480092  0.79814542]
+            </pre>
+
+            <h2>例題2:減肉信頼性評価</h2>
+            <p>HPIS Z109に対応する評価．R-packageのPSFCalcの中のMetalLoss関数参照，API579-1/ASME FFS-1第二版による</p>
+            $$g=P_{bc}-P_{a}\\
+            P_{bc}=R_{SF}\cdot P_{bi}\\
+            P_{bi}=\left ( \frac{e}{n} \right )^n \left ( \frac{0.25}{n+0.227} \right ) ln \left (1 + \frac{2t_c}{D} \right ) \sigma _u\\
+            R_{SF}=\frac{R_t}{1-\frac{1-R_t}{M_t}}\\
+            M_t=1.0010 - 0.014195 * \lambda + 0.29090 * \lambda^2 - 0.096420 * \lambda^3 + 0.020890 * \lambda^4\\
+                                       - 0.0030540 * \lambda^5 + 2.9570*10^{-4} * \lambda^6 - 1.8462*10^{-5} * \lambda^7\\
+                                        + 7.1553*10^{-7} * \lambda^8 - 1.531*10^{-8} * \lambda^9 + 1.4656*10^{-10} * \lambda^{10}\\
+            t_c=tr-FCA\\
+            R_t=\frac{t_{mm}-FCA}{t_c}\\
+            FCA=C_v*ttime\\
+            \lambda=\frac{1.285*s}{\sqrt{D \cdot t_c}}
+            $$
+            <p>平均値，COVは\(C_v,P_a,tr,no,D_i,S_u,s,t_{mm}\)について  
+                (0.1,0.5),(2.2,0.1),(13,1e-6),(0.2,1e-6),(2400,1e-6),(469,0.07),(1000,1e-6),(8,0.01)  
+                \(ttime=8\)としている．
+                
+                このとき，\(\beta=2.350336,P_f= 0.009378237\)  
+                \(\alpha= (-0.3920234, -0.8182953, 1.148204e-06, -8.123592e-07, -5.260083e-06, 0.4167402, -5.159159e-07, 0.0551186)\)   
+                \(D_P=(0.1409229,2.7167782,13.0000000,0.2000000,2400.
+                0000000,436.8436913,1000.0000000,7.9896362)\)</p>
+            <hr width="500">
+            <center>プログラムリスト</center>
+    
+            <hr width="500">
+            <pre>
+            <code>
+                #　限界状態関数を管理するクラス
+                from Utility import LimitState as ls            
+                class rnd_RS(ls.LHSbase): #LHSbaseを継承する
+                    def __init__(self,nv): #nvは変数の数
+                        super().__init__(nv)
+                    def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。下記例題のJSONデータの変数の順番に格納されている。
+                            Cv=rnd[:,0]  #変数の順番に乱数列を取り出していく
+                            Pa=rnd[:,1]
+                            tr=rnd[:,2]
+                            no=rnd[:,3]
+                            Di=rnd[:,4]
+                            Su=rnd[:,5]
+                            s=rnd[:,6]
+                            tmm=rnd[:,7]
+                            ttime=8
+                            FCA=Cv*ttime
+                            tc=tr-FCA
+                            Rt=(tmm-FCA)/tc
+                            lam=1.285*s/np.sqrt(Di*tc)
+                            ll=[lam,lam**2,lam**3,lam**4,lam**5,lam**6,lam**7,lam**8,lam**9,lam**10]
+                            cc=[-0.014195,0.29090,-0.096420, 0.020890,-0.0030540,2.9570e-4,-1.8462e-5,7.1553e-7,-1.531e-8,1.4656e-10]
+                            Mt=1.001+np.dot(cc,ll)
+                            Rsf=Rt/(1-(1-Rt)/Mt)
+                            Pbi=(2.718282/no)**no*(0.25/(no+0.227))*np.log(1+2*tc/Di)*Su
+                            Pbc=Rsf*Pbi
+                            gval=Pbc-Pa #限界状態関数の計算結果リスト
+                            return gval #そのリストをもどす
+                # 乱数列の発生
+                #データはJSON形式で与える
+                data={"Cv":{"mean":0.1,"cov":0.5,"dist":"normal"},
+                        "Pa":{"mean":2.2,"cov":0.1,"dist":"normal"},
+                        "tr":{"mean":13,"cov":1e-6,"dist":"normal"},
+                        "no":{"mean":0.2,"cov":1e-6,"dist":"normal"},
+                        "Di":{"mean":2400,"cov":1e-6,"dist":"normal"},
+                        "Su":{"mean":469,"cov":0.07,"dist":"normal"},
+                        "s":{"mean":1000,"cov":1e-6,"dist":"normal"},
+                        "tmm":{"mean":8,"cov":0.01,"dist":"normal"},
+                        }
+                nv=8 #変数の数
+                n=1000 #サンプル点数
+                k=3 #サンプリングの領域の広さ
+                lhb=rnd_RS(nv) #インスタンスの生成
+                lhb.SetData(data) #データセット
+                rnd,t=lhb.Calc(n,k) #LHS+USの乱数、破損リストがもどされる
+                X_std=(rnd-lhb.Means())/lhb.Stdvs() #データの基準化
+                print(lhb.gMean()) #平均値でのg値の値
+                #0.8541732512243336
+                # SVMによる信頼性評価  
+                import numpy as np
+                from Utility import SVMr as svm
+                svmr=svm.SVMr(X_std,t) #インスタンスの生成
+                svmr.SVM() #SVM解析
+                dp,beta=svmr.SV_RF() #提案アルゴリズムによる設計点探索
+                print('beta=',beta) #信頼性指標
+                Dp=dp*lhb.Stdvs()+lhb.Means() #原空間にもどす
+                print('DP=',Dp) #設計点
+                print('gval=',svmr.g(np.array(dp))) #設計点でのg値、0に近ければOK。
+                alpha,deriv=svmr.sv_alpha(dp)
+                print('alpha=',alpha) #感度値
+            </code> 
+            出力例   
+            beta= 2.1822490319128356
+            DP= [1.47129826e-01 2.52619370e+00 1.30000009e+01 2.00000047e-01
+             2.40000018e+03 4.30579496e+02 9.99999691e+02 7.96959996e+00]
+            gval= 0.012949680123480745
+            alpha= [-0.43774817 -0.6741365  -0.03449263 -0.12597114 -0.03577661  0.52806685
+              0.12212073  0.20447497] 
+        </pre>
+        <h2>例題3:円筒容器の破裂，Svensonの式</h2>  
+        <p>$$g=\left ( \frac{e}{n} \right )^n \left ( \frac{0.25}{n+0.227} \right ) ln \left (1 + \frac{2t_r}{D} \right ) \sigma _u -P_a$$
+
+            各変数の(平均値，COV)は，\(P_a\),\(n\),\(t_r\),\(D\),\(\sigma_u\)について，各々           
+            ( 4.6,0.03),(0.2,0.01),(13,0.01)(2400,1e-3)(469,0.02)とする．
+            このとき，\(P_f=0.01467995\),\(\beta=2.17862\),
+            \(D_P=(4.834586,0.2001745,12.92253,2400.142,457.5483)\),
+            \(\alpha=(-0.7802631,-0.04004047,0.2735232,-0.02718771,0.5603858 )\)である． 
+        </p>
+        <hr width="500">
+        <center>プログラムリスト</center>
+        <hr width="500">
+        <pre>
+        <code> 
+            #　限界状態関数を管理するクラス
+            from Utility import LimitState as ls            
+            class rnd_RS(ls.LHSbase): #LHSbaseを継承する
+                def __init__(self,nv): #nvは変数の数
+                    super().__init__(nv)
+                def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。下記例題のJSONデータの変数の順番に格納されている。
+                        Pa=rnd[:,0]  #変数の順番に乱数列を取り出していく
+                        no=rnd[:,1]
+                        tr=rnd[:,2]
+                        D=rnd[:,3]
+                        Su=rnd[:,4]
+                        gval=(2.718282/no)**no*(0.25/(no+0.227))*np.log(1+2*tr/D)*Su-Pa
+                        return gval #そのリストをもどす
+            # 乱数列の発生
+            #データはJSON形式で与える
+            data={
+                    "Pa":{"mean":4.6,"cov":0.03,"dist":"normal"},
+                    "no":{"mean":0.2,"cov":0.01,"dist":"normal"},
+                    "tr":{"mean":13,"cov":0.01,"dist":"normal"},
+                    "D":{"mean":2400,"cov":1e-3,"dist":"normal"},
+                    "Su":{"mean":469,"cov":0.02,"dist":"normal"},
+                    }
+            nv=5 #変数の数
+            n=300 #サンプル点数
+            k=3 #サンプリングの領域の広さ
+            lhb=rnd_RS(nv) #インスタンスの生成
+            lhb.SetData(data) #データセット
+            rnd,t=lhb.Calc(n,k) #LHS+USの乱数、破損リストがもどされる
+            X_std=(rnd-lhb.Means())/lhb.Stdvs() #データの基準化
+            print(lhb.gMean()) #平均値でのg値の値
+            #0.3860669654264335
+            # SVMによる信頼性評価  
+            import numpy as np
+            from Utility import SVMr as svm
+            svmr=svm.SVMr(X_std,t) #インスタンスの生成
+            svmr.SVM() #SVM解析
+            dp,beta=svmr.SV_RF() #提案アルゴリズムによる設計点探索
+            print('beta=',beta) #信頼性指標
+            Dp=dp*lhb.Stdvs()+lhb.Means() #原空間にもどす
+            print('DP=',Dp) #設計点
+            print('gval=',svmr.g(np.array(dp))) #設計点でのg値、0に近ければOK。
+            alpha,deriv=svmr.sv_alpha(dp)
+            print('alpha=',alpha) #感度値
+        </code> 
+        出力例   
+        beta= 2.0858946017875697
+        DP= [4.81834382e+00 1.99868950e-01 1.29735970e+01 2.40067451e+03
+         4.56687292e+02]
+        gval= 0.013221044390266168
+        alpha= [-0.73630722  0.02361392  0.13726625 -0.13496723  0.64825603]
+        </pre>
+
+        <h2>例題4:複雑な例題</h2>
+        <p>[参考文献]A.Haldar,S.Mahadevan,'Probability, Reliability and Statistical Methods in Engineering Design',John Wiley & Sons, Inc.P.217(2000)</p>
+        <p>$$
+            g=A_s*f_y*d*\left (1.0-\frac{\eta*A_s*f_y}{b*d*f_{cd}} \right )-M
+        $$
+        各変数の(平均値，COV)は，\(A_s\),\(f_y\),\(f_{cd}\),\(b\),\(d\),\(\eta\),\(M\)について，各々
+        ( 1.56,0.2),(47.7,0.15),(3.5,0.21)(8.0,0.1)(13.2,0.15)(0.59,0.05)(350.25,0.3)とする．
+        このとき，\(P_f=0.01164213\) ,\(\beta=2.268738 \),
+        \(D_P=(1.141779,41.67309,3.41036,7.954471,11.05959,0.5908335,476.9221 )\),
+        \(\alpha=(0.5908361,0.3712793,0.05375613,0.02508489,0.476483 ,-0.01245341,-0.5313702 )\)である．
+        </p>
+        <hr width="500">
+        <center>プログラムリスト</center>
+
+        <hr width="500">
+        <pre>
+        <code>
+            #　限界状態関数を管理するクラス
+            from Utility import LimitState as ls            
+            class rnd_RS(ls.LHSbase): #LHSbaseを継承する
+                def __init__(self,nv): #nvは変数の数
+                    super().__init__(nv)
+                def g(self,rnd):  #限界状態関数gを定義する。rnd:発生された乱数列。下記例題のJSONデータの変数の順番に格納されている。
+                        As=rnd[:,0]  #変数の順番に乱数列を取り出していく
+                        fy=rnd[:,1]
+                        fcd=rnd[:,2]
+                        b=rnd[:,3]
+                        d=rnd[:,4]
+                        eta=rnd[:,5]
+                        M=rnd[:,6]
+                        gval=As*fy*d*(1-eta*As*fy/b/d/fcd)-M
+                        return gval #そのリストをもどす
+            # 乱数列の発生            
+            #データはJSON形式で与える
+            data={
+                    "As":{"mean":1.56,"cov":0.2,"dist":"normal"},
+                    "fy":{"mean":47.7,"cov":0.15,"dist":"normal"},
+                    "fcd":{"mean":3.5,"cov":0.21,"dist":"normal"},
+                    "b":{"mean":8.0,"cov":0.1,"dist":"normal"},
+                    "d":{"mean":13.2,"cov":0.15,"dist":"normal"},
+                    "eta":{"mean":0.59,"cov":0.05,"dist":"normal"},
+                    "M":{"mean":350.25,"cov":0.3,"dist":"normal"},
+                    }
+            nv=7 #変数の数
+            n=500 #サンプル点数
+            k=3 #サンプリングの領域の広さ
+            lhb=rnd_RS(nv) #インスタンスの生成
+            lhb.SetData(data) #データセット
+            rnd,t=lhb.Calc(n,k) #LHS+USの乱数、破損リストがもどされる
+            X_std=(rnd-lhb.Means())/lhb.Stdvs() #データの基準化
+            print(lhb.gMean()) #平均値でのg値の値 
+            #515.3128289657143
+            # SVMによる信頼性評価  
+            import numpy as np
+            from Utility import SVMr as svm
+            svmr=svm.SVMr(X_std,t) #インスタンスの生成
+            svmr.SVM() #SVM解析
+            dp,beta=svmr.SV_RF() #提案アルゴリズムによる設計点探索
+            print('beta=',beta) #信頼性指標
+            Dp=dp*lhb.Stdvs()+lhb.Means() #原空間にもどす
+            print('DP=',Dp) #設計点
+            print('gval=',svmr.g(np.array(dp))) #設計点でのg値、0に近ければOK。
+            alpha,deriv=svmr.sv_alpha(dp)
+            print('alpha=',alpha) #感度値
+        </code> 
+        出力例
+        beta= 1.9106071224571557
+        DP= [  1.23309516  42.65450537   3.36404996   7.84108382  11.77929328
+           0.60139572 470.86146008]
+        gval= 0.0052061489648240755
+        alpha= [ 0.5586795   0.37116884  0.08232258  0.09769472  0.38754639 -0.19151878
+         -0.58899745]
+        </pre>
+
+        <h2>例題5:乳がん・悪性細胞の形状感度分析</h2>
+        <p>sklearnから提供される乳がん悪性細胞形状データを用い、細胞形状因子の悪性判定に及ぼす感度分析を行う</p>
+        <p>考え方としては、各形状因子を入力変数と考え、悪性=破損、良性=非破損と考え、SVM法による感度分析を実施する</p>
+        <hr width="500">
+        <center>プログラムリスト</center>
+
+        <hr width="500">
+        <pre>
+        <code>
+            import pandas as pd
+            ###breast_cancerデータセットのインポート
+            from sklearn.datasets import load_breast_cancer
+            cancer = load_breast_cancer()
+            
+            ###pandasのデータフレームに変換
+            cancer_features_dataframe = pd.DataFrame(cancer.data,columns = cancer.feature_names)
+            # 対象データの読み込み
+            breast_cancer_df_tgt = pd.DataFrame(cancer.target, columns=['target'])
+            # 特徴量スケーリング
+            from sklearn.preprocessing import StandardScaler
+            scaler = StandardScaler()
+            scaler.fit(cancer_features_dataframe)
+            data_std=scaler.transform(cancer_features_dataframe)
+            import numpy as np
+            v_mean=scaler.mean_
+            v_std=np.sqrt(scaler.var_)
+            train_x=data_std
+            var_num=train_x.shape[1]
+            train_t1=breast_cancer_df_tgt['target'].values
+            # failure -> 0, safe->1となるように変換
+            train_t1=np.where(train_t1==0,1.0,0.0)
+
+            import numpy as np
+            from Utility import SVMr as svm
+            svmr=svm.SVMr(train_x,train_t1) #インスタンスの生成
+            svmr.SVM() #SVM解析
+            dp,beta=svmr.SV_RF() #提案アルゴリズムによる設計点探索
+            print('beta=',beta)
+            Dp=dp*v_std+v_mean
+            print('DP=',Dp)
+            N_s=sum(train_t1)
+            N_f=len(train_t1)-N_s
+            print("Number of fuailure=",N_f)
+            print("Number of safe points=",N_s)
+            #p_vals=svm.predict_proba(np.array(dp).reshape(1,var_num))
+            print('gval=',svmr.g(np.array(dp)))
+            alpha,deriv=svmr.sv_alpha(dp)
+            print('alpha=',alpha) #感度値
+            #悪性乳がんへの影響因子
+            name=cancer.feature_names
+            factor_ind=np.argsort(alpha)
+            for i in range(len(name)):
+                print(i+1,':',name[factor_ind[len(name)-i-1]])
+        </code> 
+        出力例
+
+        beta= 0.10602494276677293
+        DP= [1.41426566e+01 1.93350665e+01 9.21041707e+01 6.57239030e+02
+         9.65884340e-02 1.04015452e-01 9.10737752e-02 4.96102582e-02
+         1.81075553e-01 6.27429141e-02 4.14314989e-01 1.21193385e+00
+         2.89651881e+00 4.15283638e+01 7.08900443e-03 2.50641616e-02
+         3.21501639e-02 1.17810246e-02 2.04851949e-02 3.72871385e-03
+         1.64057215e+01 2.59052038e+01 1.08066260e+02 8.96859576e+02
+         1.33225862e-01 2.54069448e-01 2.77055712e-01 1.15699664e-01
+         2.90128163e-01 8.41209607e-02]
+        Number of fuailure= 357.0
+        Number of safe points= 212.0
+        gval= -4.2291256002746636e-07
+        alpha= [ 0.04111576  0.09972064  0.05245689  0.06300211  0.1531132  -0.05820834
+          0.26933913  0.16810977 -0.02974725 -0.07305809  0.31132124 -0.08430851
+          0.14227947  0.24723722  0.15101799 -0.21817471  0.08021105 -0.02320613
+         -0.06516395 -0.23610206  0.26669232  0.35014844  0.22617044  0.26988058
+          0.35436762 -0.011701    0.22023422  0.15695258  0.00800601  0.09157292]
+        1 : worst smoothness
+        2 : worst texture
+        3 : radius error
+        4 : worst area
+        5 : mean concavity
+        6 : worst radius
+        7 : area error
+        8 : worst perimeter
+        ...
+        27 : mean fractal dimension
+        28 : texture error
+        29 : compactness error
+        30 : fractal dimension error
+        </pre>
+        </FONT>
         </div>
+
     </BODY>
 </HTML>
