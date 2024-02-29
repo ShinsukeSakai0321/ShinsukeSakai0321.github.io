@@ -1,0 +1,79 @@
+<HTML>
+    <HEAD>
+        <TITLE>FrequencyとPoFの関係</TITLE>
+        <script type="text/javascript" async src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <style>
+            .margin{margin-right: 50px; margin-left: 50px;}　
+            P { text-indent: 1em; }
+        </style>
+    </HEAD>
+    <BODY TEXT="black" BGCOLOR="#90EE90">
+        <center><h1>対数正規分布と等価なワイブル分布の誘導</h1></center>
+        <div class="margin">
+
+        <h2>はじめに</h2>
+        <p>G.W.Mair氏の書籍[1]において、寿命Nの分布を二母数ワイブル分布(WD)としているが、取り扱い上はこれを等価な対数正規分布(LND)で近似して処理している。寿命のワイブル分布の確率密度関数は以下の式で与えられる</p>
+        $$
+        f_X(X)=\frac{b}{T}\left (\frac{X}{T} \right)^{b-1}exp \left [-\left (\frac{X}{T} \right)^b \right] \tag{1}
+        $$
+       ここに、\(b\)は形状母数、\(T\)は尺度母数であり、\(X\)は寿命を示す変数である。累積分布は以下となる。
+        $$
+        F_X(X)=1-exp \left [-\left (\frac{X}{T} \right)^b \right] \tag{2}\\
+        =1-SR(X) \\
+        =FR(X)
+        $$
+        ここに、\(SR(X)\)は残存確率を、\(FR(X)\)は破損確率を示す。
+        <h2>等価性の考え方</h2>
+        <p>対数正規分布の寿命\(N\)の対数値の平均を\(m_{logN}\)、標準偏差を\(s_{logN}\)とするとき、等価性の定義を次式で与える。</p>
+        $$
+        N_{16\%}=10^{m_{logN}+s_{logN}}; SR(N_{16\%})=\Phi(-1)  \tag{3}\\
+        N_{84\%}=10^{m_{logN}-s_{logN}}; SR(N_{84\%})=\Phi(1)  
+        $$
+        <p>ここに\(\Phi()は標準正規累積分布関数\)、\(N_{16\%}\)は生存率の累積値が16%となる寿命、\(N_{84\%}\)は生存率の累積値が84%となる寿命であることを示す。この式の意味するところは、ワイブル分布の対数平均値\(m_{logN} \pm s_{logN}\)の寿命に対する累積分布値が18%と84%となる対数正規分布に近似するとする考え方である。この定義を、式(2)の累積破損確率で表現すると以下の式となる</p>
+        </p>
+        $$
+       F_X(N_{16\%})=1-exp \left [-\left (\frac{N_{16\%}}{T} \right)^b \right]  =1- \Phi(-1) =\Phi(1) \tag{4}
+       $$
+       $$
+       F_X(N_{84\%})=1-exp \left [-\left (\frac{N_{84\%}}{T} \right)^b \right]  =1- \Phi(1) =\Phi(-1) \tag{5}
+        $$
+        なお、以後、対数値の平均値に対応する寿命値\(N_{50\%}\)、対数値の標準偏差値に対応する寿命値を\(N_S\)で表記する。つまり、
+        $$
+        N_{50\%}=10^{m_{logN}},N_S=10^{s_{logN}}
+        $$
+        <h2>近似式の誘導</h2>
+        式(4)を変形すると
+        $$
+        b(log N_{16\%} - log T)=log(-log(1-\Phi(1))) \tag{6}
+        $$
+        ここで、\(log\)は\(e\)を基底とする対数である。同様に式(5)を変形すると、
+        $$
+        b(log N_{84\%} - log T)=log(-log(1-\Phi(-1))) \tag{7}
+        $$
+        式(6),(7)の右辺を\(C_1,C_2\)と表記する。つまり、
+        $$
+        C_1=log(-log(1-\Phi(1))),C_2=log(-log(1-\Phi(-1))) \tag{8}
+        $$
+        式(6)と(7)の差分をとって\(b\)について整理すると
+        $$
+        b=\frac{C_1-C_2}{log N_{16\%}-log N_{84\%}}=\frac{C_1-C_2}{log 10^{m_{logN}+s_{logN}}-log 10^{m_{logN}-s_{logN}}}=\frac{1}{2s_{logN}} \left( \frac{C_1-C_2}{log 10} \right) \approx \frac{1.02763}{2s_{logN}} \tag{9}
+        $$
+        これにて、\(b\)に対する近似関係が誘導された。なお、\(s_{logN}=log_{10}N_S\)の関係にあることに留意すること。次に、\(T\)を誘導する。\(N_{16\%}=N_{50\%} \cdot N_S\)の関係に留意した上で、式(6)を書き直すと
+        $$
+        b(log (N_{50\%} \cdot N_S) - log T)=C_1 \tag{10}
+        $$
+        これに式(9)で誘導した\(b\)の近似式を代入すると以下が誘導される。
+        $$
+        T=N_{50\%} \cdot N_S^{1-\alpha},\alpha=\frac{C_1*1.02763}{log 10}
+        $$
+        \(\alpha\)を計算して書き直すと
+        $$
+        T \approx N_{50\%} \cdot N_S^{0.484136} \tag{11}
+        $$
+        これにて、Tの近似関係も誘導された。式(9)がMair氏の本の式(5.32)に、式(11)が、式(5.31)に対応していることを確認されたい。  <br>
+        参考文献:<br>
+        [1]G.W.Mair,’Safety Assessment of Composite Cylinders for Gas Storage by Statistical Methods’,
+        Springer International Publishing AG 2017,DOI 10.1007/978-3-319-49710-5.
+    </div>
+    </BODY>
+</HTML>
