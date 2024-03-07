@@ -26,109 +26,80 @@
             <li>登録されているコマンドは以下のhelp文で確認できる<br>
                 help(ls))</li>
         </ol>
-        <h2>登録されているコマンド</h2>
-        <p>以下には、外部から利用される可能性のあるコマンドのみ抽出して説明する。全ての登録コマンドを確認するためには、help(ls)を入力して確認すること。</p>
+        <h2>基本的使い方</h2>
+            <p>モジュール内のクラスLSFMを継承したクラスをユーザが定義することにより、限界状態関数法を容易に利用できる。LSFMのメソッドを以下に示す。</p>
         <table border="1">
             <tr>
-                <th>コマンド</th><th>内容</th>
+                <th>LSFMのメソッド</th><th>内容</th>
             </tr>
 
-            <tr><td>LSFM</td><td>信頼性解析管理のための基底クラス</td>
+            <tr>
+                <td>RFn()</td><td>Rackvitz Fiessler法による設計点探索</td>
             </tr>
             <tr>
-                <td>Lbase</td><td>限界状態関数定義のための基底クラス</td>
+                <td>GetBeta()</td><td>信頼性指標βの取得</td>
             </tr>
             <tr>
-                <td>MetalLoss</td><td>API法による局部減肉信頼性評価のための管理クラス</td>
+                <td>GetAlpha()</td><td>感度ベクトルの取得</td>
+            </tr> 
+            <tr>
+                <td>GetPOF()</td><td>破損確率の取得</td>
             </tr>
- 
+            <tr>
+                <td>GetDP()</td><td>設計点の取得</td>
+            </tr>
+            <tr>
+                <td>GetConv()</td><td>RF法の収束回数の取得</td>
+            </tr>
+            <tr>
+                <td>GetPSF()</td><td>部分安全係数の取得</td>
+            </tr>
         </table>
         
         <h2>例題1</h2>
-        <p>登録されているコマンドの確認</p>
-        <FONT SIZE="4">
-        <pre>
-            from Utility import LimitState as ls
-            help(ls)
-        </pre>
-        </FONT>
-
-        <h2>例題2</h2>
-        <p>局部減肉評価</p>
+        <p>RSモデルへの適用例</p>
         <FONT SIZE="4">
         <hr width="500">
         <center>プログラムリスト</center>
         <hr width="500">
     <pre>
-            n=8
-            Mu=[0.1,1.08,13,0.2,2400,469,1000,8]
-            cov=[0.5,0.1,1e-6,1e-6,1e-6,0.06,1e-6,0.01]
-            sigmmaX = [x * y for (x, y) in zip(Mu, cov)]
-            dist =["gumbel", "gumbel", "normal", "normal" ,"normal" ,"normal" ,"normal" ,"normal"]
-            ttime=8
-            metal=ls.MetalLoss(n,Mu,sigmmaX,dist,ttime)
-            metal.calc()
-            metal.GetBeta()
+        # RSモデル
+        # 限界状態関数クラスを新規に定義して利用する場合
+        class GRS(ls.LSFM):  #LSFMから継承する
+            def __init__(self,n,muX,sigmmaX,dist):
+                super().__init__(n,muX,sigmmaX,dist)
+            def gcalc(self,X): #g値を計算する仮想関数
+                R=X[0]
+                S=X[1]
+                g=R-S  #限界状態関数
+                return g  #必ずg値を戻す
+            def dGdXcalc(self,X): #gの微分ベクトルを計算する仮想関数
+                R=X[0]
+                S=X[1]
+                dGdX=[0]*len(X) #Xと同じ大きさのリストを作る
+                dGdX[0] =1.0
+                dGdX[1] =-1.0
+                return dGdX #必ず微分ベクトルを戻す
+        dist=['normal','normal'] #分布形はweibull,normal,lognormal,gumbel,uniformのいずれか
+        muX=[200,100]
+        sigmmaX=[10,20]
+        n=2
+        rs=GRS(n,muX,sigmmaX,dist) #インスタンスの生成
+        rs.RFn()
+        rs.GetBeta()
             #
         </pre>
         </FONT>
-        この結果，以下の出力を確認する．
+        この結果，以下の出力を確認する．<br>
         <FONT SIZE="4">
-        <pre>
-            5.055623457624247
 
-            なお，局部減肉モデルの詳細については下記文献を参照のこと．
-            酒井信介，岩崎 篤，佐々木哲也，宮崎信弥，石崎陽一，<br>
-            "局部減肉信頼性管理のための部分安全係数表の作成"，<br>
-            圧力技術57巻2号(2019)
-        </pre>
-        </FONT>
-
-        <h2>例題3</h2>
-        <p>限界状態関数管理クラスと、信頼性管理クラスを定義した上で使う例題。最も基本となるRSモデルの例題．<br>
-            ここでは、各クラス名をGRS,RSとしている。</p>
-        <FONT SIZE="4">
-        <hr width="500">
-        <center>プログラムリスト</center>
-        <hr width="500">
-        <pre>
-            # RSモデル
-            # 限界状態関数クラスを新規に定義して利用する場合
-            class GRS(ls.Lbase):
-                def __init__(self,n):
-                    self.n=n
-                    super().__init__(self.n)
-                def gcalc(self):
-                    X=super().GetX()
-                    R=X[0]
-                    S=X[1]
-                    g=R-S
-                    super().SetG(g)
-                def dGdXcalc(self):
-                    X=super().GetX()
-                    dGdX=super().GetdGdX()
-                    R=X[0]
-                    S=X[1]
-                    dGdX[0] =1.0
-                    dGdX[1] =-1.0
-                    super().SetdGdX(dGdX)
-            dist=['normal','normal']
-            muX=[200,100]
-            sigmmaX=[10,20]
-            n=2
-            rs=ls.Gmanage(n,muX,sigmmaX,dist,GRS)
-            rs.RF()
-            rs.GetBeta()
-        </pre>
-        </FONT>
-        この結果，信頼性指標の出力値として以下の出力を確認する．
-        <FONT SIZE="4">
-        <pre>
             4.47213595499958
-        </pre>
-        </FONT>
+        <p>このように、LSFMクラスを継承した上で、__init__関数、仮想関数のgcalc、dGdXcalc関数を定義するだけで、限界状態関数法の計算が可能となる</p>
 
-        <h2>例題4</h2>
+
+
+
+        <h2>例題2</h2>
         <p>限界状態関数や変数を文字列で定義し，平均値，標準偏差を指定する場合．最も簡単な利用法．</p>
         <p><font color="red">注意:変数として使用可能な文字は小文字のみです．</font></p>
         <FONT SIZE="4">
@@ -136,8 +107,13 @@
         <center>プログラムリスト</center>
         <hr width="500">
         <pre>
-            aa=ls.reliability(g='r-s',var=['r','s'],dist=['normal','normal'],muX=[200,100],sigmmaX=[10,20])
-            aa.calc()
+            g="r-s"
+            var =['r','s']
+            muX =[200,100]
+            sigmmaX=[10,20]
+            dist =["normal", "normal"]
+            aa =ls.GeneralG(g,var,len(var),muX,sigmmaX,dist)
+            aa.RFn()
             aa.GetBeta()
         </pre>
         </FONT>
@@ -145,17 +121,11 @@
         <FONT SIZE="4">
         <pre>
             4.47213595499958
-            なお，上記例題のreliability関数入力パラメータはデフォールト値として設定されているものなので，<br>
-            以下と書いても同じ結果となる．動作確認に利用するとよい．
-
-            aa=ls.reliability()
-            aa.calc()
-            aa.GetBeta()
 
         </pre>
         </FONT>
 
-        <h2>例題5</h2>
+        <h2>例題3</h2>
         <p>下記文献の検証
             "Probability, Reliability and Statistical Methods <br>in　Engineering Design"
             Achintya Haldar  & Sankaran Mahadevan<br>
@@ -166,23 +136,26 @@
         <hr width="500">
         <pre>
             #　限界状態関数を文字列で与えて利用する場合
-            import numpy as np
             g="As*fy*d*(1.0-eta*As*fy/b/d/fcd)-M"
             var =["As","fy","fcd","b","d","eta","M"]
             muX =[1.56, 47.7, 3.5, 8.0, 13.2, 0.59, 326.25]
             covX =[0.036, 0.15, 0.21, 0.045, 0.086, 0.05, 0.17]
             sigmmaX = list(np.array(covX)*np.array(muX))
             dist =["normal", "normal", "normal", "normal" ,"normal" ,"normal" ,"normal" ]
-            aa =ls.reliability(g=g,var=var,dist=dist,muX=muX,sigmmaX=sigmmaX)
+            aa =ls.GeneralG(g,var,len(var),muX,sigmmaX,dist)
+            aa.RFn()
             a1=aa.GetBeta()
             dist[6]="lognormal"
-            aa =ls.reliability(g=g,var=var,dist=dist,muX=muX,sigmmaX=sigmmaX)
+            aa =ls.GeneralG(g,var,len(var),muX,sigmmaX,dist)
+            aa.RFn()
             a2=aa.GetBeta()
             dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"normal"]
-            aa =ls.reliability(g=g,var=var,dist=dist,muX=muX,sigmmaX=sigmmaX)
+            aa =ls.GeneralG(g,var,len(var),muX,sigmmaX,dist)
+            aa.RFn()
             a3=aa.GetBeta()
             dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"lognormal"]
-            aa =ls.reliability(g=g,var=var,dist=dist,muX=muX,sigmmaX=sigmmaX)
+            aa =ls.GeneralG(g,var,len(var),muX,sigmmaX,dist)
+            aa.RFn()
             a4=aa.GetBeta()
             [a1,a2,a3,a4]
         </pre>
@@ -194,9 +167,9 @@
         </pre>
         </FONT>
 
-        <h2>例題6</h2>
-        <p>例題5と同じ問題について直接限界状態関数を定義して利用する方法。PYTHONの数式処理機能を利用すると便利。<br>
-            例題5よりは、処理速度が早くなる。</p>
+        <h2>例題4</h2>
+        <p>例題3と同じ問題について直接限界状態関数を定義して利用する方法。PYTHONの数式処理機能を利用すると便利。<br>
+            例題3よりは、処理速度が早くなる。</p>
         <FONT SIZE="4">
         <hr width="500">
         <center>プログラムリスト</center>
@@ -204,14 +177,14 @@
         <pre>
             from sympy import *
             import numpy as np
-            class Gmulti(ls.Lbase):
-                def __init__(self,n):
-                    self.n=n
-                    super().__init__(self.n)
+            class Gmulti(ls.LSFM):
+                def __init__(self,n,muX,sigmmaX,dist):
                     As,fy,fcd,b,d,eta,M = symbols('As fy fcd b d eta M')
                     g=As*fy*d*(1.0-eta*As*fy/b/d/fcd)-M
                     #あらかじめ微分の文字列を数式処理で作っておく
                     self.gg=str(g)
+                    #親クラスの初期化は、self.gg定義後に行うこと
+                    super().__init__(n,muX,sigmmaX,dist)
                     self.d0=str(diff(g,As))
                     self.d1=str(diff(g,fy))
                     self.d2=str(diff(g,fcd))
@@ -219,8 +192,7 @@
                     self.d4=str(diff(g,d))
                     self.d5=str(diff(g,eta))
                     self.d6=str(diff(g,M))
-                def gcalc(self):
-                    X=super().GetX()
+                def gcalc(self,X):
                     As=X[0]
                     fy=X[1]
                     fcd=X[2]
@@ -229,9 +201,8 @@
                     eta=X[5]
                     M=X[6]
                     g=eval(self.gg)
-                    super().SetG(g)
-                def dGdXcalc(self):
-                    X=super().GetX()
+                    return g
+                def dGdXcalc(self,X):
                     As=X[0]
                     fy=X[1]
                     fcd=X[2]
@@ -239,7 +210,7 @@
                     d=X[4]
                     eta=X[5]
                     M=X[6]
-                    dGdX=super().GetdGdX()
+                    dGdX=[0]*len(X)
                     #微分値の評価
                     dGdX[0]=eval(self.d0)
                     dGdX[1]=eval(self.d1)
@@ -248,26 +219,26 @@
                     dGdX[4]=eval(self.d4)
                     dGdX[5]=eval(self.d5)
                     dGdX[6]=eval(self.d6)
-                    super().SetdGdX(dGdX)
+                    return dGdX
             dist =["normal", "normal", "normal", "normal" ,"normal" ,"normal" ,"normal" ]
             muX =[1.56, 47.7, 3.5, 8.0, 13.2, 0.59, 326.25]
             covX =[0.036, 0.15, 0.21, 0.045, 0.086, 0.05, 0.17]
             sigmmaX = list(np.array(covX)*np.array(muX))
             n=7
-            rs=ls.Gmanage(n,muX,sigmmaX,dist,Gmulti)
-            rs.RF()
+            rs =Gmulti(n,muX,sigmmaX,dist)
+            rs.RFn()
             a1=rs.GetBeta()
             dist[6]="lognormal"
-            rs=ls.Gmanage(n,muX,sigmmaX,dist,Gmulti)
-            rs.RF()
+            rs=Gmulti(n,muX,sigmmaX,dist)
+            rs.RFn()
             a2=rs.GetBeta()
             dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"normal"]
-            rs=ls.Gmanage(n,muX,sigmmaX,dist,Gmulti)
-            rs.RF()
+            rs=Gmulti(n,muX,sigmmaX,dist)
+            rs.RFn()
             a3=rs.GetBeta()
             dist=["lognormal", "lognormal", "lognormal", "lognormal" ,"lognormal" ,"lognormal" ,"lognormal"]
-            rs=ls.Gmanage(n,muX,sigmmaX,dist,Gmulti)
-            rs.RF()
+            rs=Gmulti(n,muX,sigmmaX,dist)
+            rs.RFn()
             a4=rs.GetBeta()
             [a1,a2,a3,a4] 
         </pre>
@@ -278,95 +249,111 @@
             <p>[3.8330281658128675, 3.7612536656241864, 4.3876843910772845, 4.090647398473586]</p>
             </pre>
             </FONT>
-        <h2>例題7</h2>
-        <p>例題3と同じ問題について限界状態関数のみを表現するクラスを記述して信頼性評価を行う。例題3やこの例題では、設計点探索のアルゴリズムとしてRackwitz Fiessler法を用いている。この場合、探索の開始点を指定する必要があるが、デフォールトとしては基準化空間の原点が指定されるようになっている。原点以外の任意点を指定する場合の例題は例題8に示してある。</p>
+
+        <h2>例題5</h2>
+        <p>例題1と同じ問題について辞書型データでデータを与えて信頼性評価を行う。例題1やこの例題では、設計点探索のアルゴリズムとしてRackwitz Fiessler法を用いている。この場合、探索の開始点を指定する必要があるが、デフォールトとしては基準化空間の原点が指定されるようになっている。原点以外の任意点を指定する場合の例題は例題6に示してある。</p>
         <FONT SIZE="4">
         <hr width="500">
         <center>プログラムリスト</center>
         <hr width="500">
         <pre>
-            from Utility import LimitState as ls
-            from sympy import *
-            class GRS(ls.RelBase):
-                def __init__(self):
-                    self.variable=['r','s']#限界状態関数内の変数
-                    self.title='RS model'#課題のタイトル
-                class G(ls.Lbase):#限界状態関数クラス名、Gでなければならない
-                    def __init__(self,n):
-                        self.n=n
-                        super().__init__(self.n)
-                        r,s=symbols('r s')
-                        g=r-s
-                        self.gg=str(g)
-                        self.d0=str(diff(g,r))
-                        self.d1=str(diff(g,s))
-                    def gcalc(self):#G値の計算
-                        X=super().GetX()
-                        r=X[0]
-                        s=X[1]
-                        g=eval(self.gg)
-                        super().SetG(g)
-                    def dGdXcalc(self):#微分値の計算
-                        X=super().GetX()
-                        dGdX=super().GetdGdX()
-                        r=X[0]
-                        s=X[1]
-                        dGdX[0] =eval(self.d0)
-                        dGdX[1] =eval(self.d1)
-                        super().SetdGdX(dGdX)
+            # RSモデル
+            # 限界状態関数クラスを新規に定義して利用する場合
+            class GRS(ls.LSFM):  #LSFMから継承する
+                def __init__(self,n,muX,sigmmaX,dist):
+                    super().__init__(n,muX,sigmmaX,dist)
+                def gcalc(self,X): #g値を計算する仮想関数
+                    R=X[0]
+                    S=X[1]
+                    g=R-S  #限界状態関数
+                    return g  #必ずg値を戻す
+                def dGdXcalc(self,X): #gの微分ベクトルを計算する仮想関数
+                    R=X[0]
+                    S=X[1]
+                    dGdX=[0]*len(X) #Xと同じ大きさのリストを作る
+                    dGdX[0] =1.0
+                    dGdX[1] =-1.0
+                    return dGdX #必ず微分ベクトルを戻す
             # main program #
             #入力データは辞書形式で表現
             data={"r":{"mean":200,"cov":0.05,"dist":"normal"},#辞書形式で与える入力データ
             "s":{"mean":100,"cov":0.2,"dist":"normal"}            }
-            rs=GRS()
-            print('val=',rs.Geval(data))#dataに対する限界状態関数値
-            rs.Reliability(data)#dataに対する信頼性評価
+            n,muX,sigmmaX,dist=ls.dict2data(data)#辞書型データの入力データへの変換
+            rs=GRS(n,muX,sigmmaX,dist)
+            print('val=',rs.gcalc(muX))#初期点に対する限界状態関数値
+            rs.RFn()
             print('beta=',rs.GetBeta())#信頼性指標の取得
             print('alpha=',rs.GetAlpha())#感度の取得
-            print('POF=',rs.GetPOF())#破損確率の取得            
+            print('POF=',rs.GetPOF())#破損確率の取得             
         </pre>
         </FONT>
-        <h2>例題8</h2>
-        <p>例題3と同じ問題について限界状態関数のみを表現するクラスを記述して信頼性評価を行う。例題3やこの例題では、設計点探索のアルゴリズムとしてRackwitz Fiessler法を用いている。この場合、探索の開始点を指定する必要があるが、デフォールトとしては基準化空間の原点(平均点)が指定されるようになっている。しかし、場合によっては、原点以外の任意の座標点を開始点として指定したいこともある。以下にその例題を示す。### 1 ###と### 2 ###が変更点である</p>
+
+        <h2>例題6</h2>
+        <p>例題5と同じであるが、スタート点を変更する例題。例題5やこの例題では、設計点探索のアルゴリズムとしてRackwitz Fiessler法を用いている。この場合、探索の開始点を指定する必要があるが、デフォールトとしては基準化空間の原点(平均点)が指定されるようになっている。しかし、場合によっては、原点以外の任意の座標点を開始点として指定したいこともある。以下にその例題を示す。### 1 ###と### 2 ###が変更点である</p>
         <FONT SIZE="4">
             <hr width="500">
             <center>プログラムリスト</center>
             <hr width="500">
             <pre>
-                from Utility import LimitState as ls  #Ver.1.2.3 以上
-                from sympy import *
-                class GRS(ls.RelBase):
-                    ... 例題7と同じ
-                    ...
-                # main program #
+                class GRS(ls.LSFM):  #LSFMから継承する
+                    def __init__(self,n,muX,sigmmaX,dist):
+                        super().__init__(n,muX,sigmmaX,dist)
+                    def gcalc(self,X): #g値を計算する仮想関数
+                        R=X[0]
+                        S=X[1]
+                        g=R-S  #限界状態関数
+                        return g  #必ずg値を戻す
+                    def dGdXcalc(self,X): #gの微分ベクトルを計算する仮想関数
+                        R=X[0]
+                        S=X[1]
+                        dGdX=[0]*len(X) #Xと同じ大きさのリストを作る
+                        dGdX[0] =1.0
+                        dGdX[1] =-1.0
+                        return dGdX #必ず微分ベクトルを戻すam #
                 #入力データは辞書形式で表現
                 data={"r":{"mean":200,"cov":0.05,"dist":"normal"},#辞書形式で与える入力データ
                 "s":{"mean":100,"cov":0.2,"dist":"normal"}            }
-                rs=GRS()
-                print('val=',rs.Gcheck(data))#dataに対する限界状態関数値
+                n,muX,sigmmaX,dist=ls.dict2data(data)#辞書型データの入力データへの変換
+                rs=GRS(n,muX,sigmmaX,dist)
+                print('val=',rs.gcalc(muX))#muXに対する限界状態関数値
                 ### 1 ### まず探索開始点のリストを定義。例えば[100,100]の場合について例示。
                 nstart=[100,100]
-                ### 2 ### Reliabilityメソッドの引数startに'Coordinate'を指定し、Xstartにnstartを指定する
-                rs.Reliability(data,start='Coordinate',Xstart=nstart)#dataに対する信頼性評価
+                ### 2 ### RFnメソッドの引数startに'Coordinate'を指定し、Xstartにnstartを指定する
+                rs.RFn(start='Coordinate',Xstart=nstart)#dataに対する信頼性評価
+                #start='Origin'のとき、原点からスタート、start='Coordinate'のとき、Xstartで与える座標からスタートする。デフォールトは'Origin'
                 print('beta=',rs.GetBeta())#信頼性指標の取得
                 print('alpha=',rs.GetAlpha())#感度の取得
-                print('POF=',rs.GetPOF())#破損確率の取得            
+                print('POF=',rs.GetPOF())#破損確率の取得 
+                           
             </pre>
             </FONT>
 
-            <h2>例題9</h2>
-        <p>設計点探索のアルゴリズムとしてRackwitz Fiessler法を用いている場合、local minimumに収束してしまう場合がある。このような事態を防ぐためには、探索のスタート点を広域から、徐々に絞り込んでいけばよい。最適化プログラムOptunaを使った例題を以下に示す。限界状態関数は例題8と同じものを使う。Optuna適用のために、まずclass Objectを用意する。ただし、この探索方法は一般に相当の時間を要する。local minimumへの収束の懸念がある場合にのみ行う。</p>
+            <h2>例題7</h2>
+        <p>設計点探索のアルゴリズムとしてRackwitz Fiessler法を用いている場合、local minimumに収束してしまう場合がある。このような事態を防ぐためには、探索のスタート点を広域から、徐々に絞り込んでいけばよい。最適化プログラムOptunaを使った例題を以下に示す。限界状態関数は例題6と同じものを使う。Optuna適用のために、まずclass Objectを用意する。ただし、この探索方法は一般に相当の時間を要する。local minimumへの収束の懸念がある場合にのみ行う。</p>
         <FONT SIZE="4">
             <hr width="500">
             <center>プログラムリスト</center>
             <hr width="500">
             <pre>
-                from Utility import LimitState as ls  #Ver.1.2.3 以上
-                from sympy import *
-                class GRS(ls.RelBase):
-                    ... 例題7と同じ
-                    ...
-
+                class GRS(ls.LSFM):  #LSFMから継承する
+                    def __init__(self,n,muX,sigmmaX,dist):
+                        super().__init__(n,muX,sigmmaX,dist)
+                    def gcalc(self,X): #g値を計算する仮想関数
+                        R=X[0]
+                        S=X[1]
+                        g=R-S  #限界状態関数
+                        return g  #必ずg値を戻す
+                    def dGdXcalc(self,X): #gの微分ベクトルを計算する仮想関数
+                        R=X[0]
+                        S=X[1]
+                        dGdX=[0]*len(X) #Xと同じ大きさのリストを作る
+                        dGdX[0] =1.0
+                        dGdX[1] =-1.0
+                        return dGdX #必ず微分ベクトルを戻すam #
+                #入力データは辞書形式で表現
+                data={"r":{"mean":200,"cov":0.05,"dist":"normal"},#辞書形式で与える入力データ
+                "s":{"mean":100,"cov":0.2,"dist":"normal"}            }
+                n,muX,sigmmaX,dist=ls.dict2data(data)#辞書型データの入力データへの変換
                 import numpy as np
                 import optuna
                     
@@ -375,12 +362,13 @@
                         # 変数X,yの初期化
                         self.data=data
                     def __call__(self, trial):
-                        rs=GRS()
+                        n,muX,sigmmaX,dist=ls.dict2data(self.data)
+                        rs=GRS(n,muX,sigmmaX,dist)
                         ### スタート点の調査範囲の指定
                         r = trial.suggest_uniform('r', 50,300)
                         s = trial.suggest_uniform('s', 50,300)
                         start=[r,s]
-                        rs.Reliability(self.data,start='Coordinate',Xstart=start)
+                        rs.RFn(start='Coordinate',Xstart=start)
                         return rs.GetBeta()  #信頼性指標を戻す
                 # main program #
                 #入力データは辞書形式で表現
@@ -392,9 +380,13 @@
                 study.optimize(objective, timeout=60)
                 
                 # 最小の信頼性指標と、その値を与えたスタート点の出力
-                print('params:', study.best_params,',best_value:',study.best_value)       
+                print('params:', study.best_params,',best_value:',study.best_value)         
             </pre>
             </FONT>
+            <pre>
+                出力例
+                params: {'r': 107.86532411893185, 's': 126.05989917926681} ,best_value: 4.47213595499958
+            </pre>
     </div>   
     </BODY>
 </HTML>
